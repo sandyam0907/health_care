@@ -427,7 +427,7 @@ $url2 = $this->uri->segment(2);// Controller - instrumentexit;
                                 <a class="dropdown-item" href="#">👤 Profile</a>
                                 <a class="dropdown-item" href="#">🔑 Change Password</a>
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item text-danger" href="login.html">🚪 Logout</a>
+                                <a class="dropdown-item text-danger" href="<?php print base_url();?>user/auth/logout">🚪 Logout</a>
                             </div>
                         </li>
 

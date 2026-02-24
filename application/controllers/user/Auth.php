@@ -302,7 +302,7 @@ class Auth extends MY_Controller {
 		//-----------------------------------------------------------------------
 		public function logout(){
 			$this->session->sess_destroy();
-			redirect(base_url('admin/auth/login'), 'refresh');
+			redirect(base_url('user/auth/login'), 'refresh');
 		}
 		
 		// Get Country. State and City
