@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>UP Govt – Preventive Health Report</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap 4.6 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+
+    <style>
+        :root {
+            --primeColor: #1f518a;
+        }
+
+        body {
+            background: #f4f6f9;
+            font-family: "Segoe UI", Roboto, Arial, sans-serif;
+        }
+
+        /* ===== TOP GOV HEADER ===== */
+        .gov-top-header {
+            background: var(--primeColor);
+            color: #fff;
+            padding: 12px 25px;
+        }
+
+        .gov-top-header h5 {
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .gov-top-header small {
+            opacity: .85;
+        }
+
+        /* ===== NAVBAR ===== */
+        .gov-navbar {
+            background: #ffffff;
+            border-bottom: 2px solid var(--primeColor);
+            padding: 0px 25px;
+        }
+
+        .gov-navbar .nav-link {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .gov-navbar .nav-link:hover {
+            color: var(--primeColor);
+        }
+
+        /* ===== CARD & FORM ===== */
+        .card {
+            border-radius: 8px;
+            min-height: 65vh;
+        }
+
+        .nav-tabs .nav-link {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .nav-tabs .nav-link.active {
+            background: var(--primeColor);
+            color: #fff;
+        }
+
+        .section-title {
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--primeColor);
+        }
+
+        label {
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        /* ===== FOOTER ===== */
+        .gov-footer {
+            background: #ffffff;
+            border-top: 2px solid var(--primeColor);
+            padding: 12px 20px;
+            font-size: 13px;
+            color: #555;
+        }
+
+        /* ===== STICKY ACTION BAR ===== */
+        .footer-btns {
+            position: sticky;
+            bottom: 0;
+            background: #fff;
+            border-top: 1px solid #ddd;
+            padding: 12px;
+            z-index: 99;
+        }
+
+        .nav-item {
+            position: relative;
+            margin-right: 20px;
+            border-radius: 0;
+        }
+
+        .tab-content>.active {
+            display: block;
+            padding: 20px;
+        }
+
+        /* ACTIVE TAB */
+        .nav-tabs .nav-link.active {
+            background: var(--primeColor);
+            color: #fff;
+        }
+
+        /* RIGHT ANGLE */
+        .nav-tabs .nav-link.active::after {
+            content: "";
+            position: absolute;
+            top: 1px;
+            right: -19px;
+            width: 0;
+            height: 0;
+            border-top: 20px solid transparent;
+            border-bottom: 20px solid transparent;
+            border-left: 20px solid var(--primeColor);
+        }
+
+        /* OPTIONAL: LEFT CUT (MORE PREMIUM) */
+        .nav-tabs .nav-link::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-top: 20px solid transparent;
+            border-bottom: 20px solid transparent;
+            border-left: 10px solid #f4f6f9;
+        }
+
+        .nav-tabs .nav-link.active::before {
+            border-left-color: #f4f6f9;
+        }
+
+        .btn {
+            font-size: .9rem !important;
+            padding: 7px 15px !important;
+            min-width: 100px;
+        }
+
+        .btn-success,
+        .btn-primary {
+            color: #fff;
+            background-color: var(--primeColor) !important;
+            border-color: var(--primeColor) !important;
+            min-width: 140px;
+        }
+
+        .nav-tabs {
+            border-bottom: 0px solid #dee2e6;
+        }
+
+        .nav-tabs .nav-link:focus,
+        .nav-tabs .nav-link:hover {
+            isolation: isolate;
+            border-color: white !important;
+        }
+
+        .gov-header {
+            background: linear-gradient(90deg, #1f518a, #163e68);
+            color: #fff;
+            padding: 10px 15px;
+            z-index: 1030;
+        }
+
+        .gov-title {
+            font-weight: 600;
+            font-size: 15px;
+            line-height: 1.2;
+        }
+
+        .gov-subtitle {
+            font-size: 12px;
+            opacity: .9;
+        }
+
+        .gov-logo {
+            font-size: 22px;
+        }
+
+        .gov-notification {
+            position: relative;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .notify-dot {
+            position: absolute;
+            top: 2px;
+            right: 0;
+            width: 7px;
+            height: 7px;
+            background: #ff3b3b;
+            border-radius: 50%;
+        }
+
+        @media(max-width:768px) {
+            .gov-title {
+                font-size: 14px;
+            }
+
+            .gov-subtitle {
+                font-size: 11px;
+            }
+        }
+
+        @media(max-width:768px) {
+            .nav-tabs {
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                overflow-y: hidden;
+            }
+
+            .nav-tabs .nav-item {
+                flex: 0 0 auto;
+            }
+        }
+
+        .gov-header {
+            background: linear-gradient(90deg, #1f518a, #163e68);
+            padding: 0;
+            z-index: 1030;
+        }
+
+        .gov-title {
+            font-weight: 600;
+            font-size: 15px;
+            line-height: 1.2;
+        }
+
+        .gov-subtitle {
+            font-size: 12px;
+            opacity: .9;
+        }
+
+        .gov-logo {
+            font-size: 22px;
+        }
+
+        .gov-menu .nav-link {
+            font-weight: 600;
+            padding: 8px 14px;
+        }
+
+        .gov-menu .nav-link.active {
+            background: rgba(255, 255, 255, .15);
+            border-radius: 4px;
+        }
+
+        .notify-dot {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 8px;
+            height: 8px;
+            background: #ff3b3b;
+            border-radius: 50%;
+        }
+
+        .gov-user-circle {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: #fff;
+            color: #1f518a;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+        }
+
+        .gov-dropdown {
+            min-width: 220px;
+            font-size: 14px;
+        }
+
+        @media(max-width:768px) {
+            .gov-title {
+                font-size: 14px;
+            }
+
+            .gov-subtitle {
+                font-size: 11px;
+            }
+
+            .gov-menu {
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- ===== GOV HEADER & NAVBAR (DYNAMIC & RESPONSIVE) ===== -->
+    <header class="gov-header sticky-top">
+        <nav class="navbar navbar-expand-lg navbar-dark">
+            <div class="container-fluid">
+
+                <!-- LEFT: LOGO + TITLE -->
+                <div class="d-flex align-items-center">
+                    <span class="gov-logo mr-2">🛡️</span>
+                    <div class="d-none d-sm-block">
+                        <div class="gov-title">Government of Uttar Pradesh</div>
+                        <div class="gov-subtitle">Department of Health & Family Welfare</div>
+                    </div>
+                </div>
+
+                <!-- MOBILE TOGGLE -->
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#govNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- NAV + ACTIONS -->
+                <div class="collapse navbar-collapse" id="govNav">
+
+                    <!-- CENTER MENU -->
+                    <ul class="navbar-nav mx-auto gov-menu">
+                        <li class="nav-item"><a class="nav-link" href="index.html">Analytics</a></li>
+                        <li class="nav-item"><a class="nav-link active" href="new_screening.html">New Screening</a></li>
+                        <li class="nav-item"><a class="nav-link" href="report.html">Reports</a></li>
+                    </ul>
+
+                    <!-- RIGHT ACTIONS -->
+                    <ul class="navbar-nav ml-auto align-items-center">
+
+                        <!-- NOTIFICATION DROPDOWN -->
+                        <li class="nav-item dropdown mr-3">
+                            <a class="nav-link dropdown-toggle position-relative" href="#" data-toggle="dropdown">
+                                🔔
+                                <span class="notify-dot"></span>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right gov-dropdown">
+                                <h6 class="dropdown-header">Notifications</h6>
+                                <a class="dropdown-item small" href="#">🧪 Lab results pending</a>
+                                <a class="dropdown-item small" href="#">📄 Report generated</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item text-center small" href="#">View all</a>
+                            </div>
+                        </li>
+
+                        <!-- USER DROPDOWN -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#"
+                                data-toggle="dropdown">
+                                <div class="gov-user-circle mr-2">MO</div>
+                                <span class="d-none d-md-inline">Medical Officer</span>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right gov-dropdown">
+                                <div class="px-3 py-2 small text-muted">
+                                    District Hospital<br>
+                                    Role: Medical Officer
+                                </div>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="#">👤 Profile</a>
+                                <a class="dropdown-item" href="#">🔑 Change Password</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item text-danger" href="login.html">🚪 Logout</a>
+                            </div>
+                        </li>
+
+                    </ul>
+                </div>
+
+            </div>
+        </nav>
+    </header>
+    <!-- ===== NOTIFICATION BAR ===== -->
+    <div class="container-fluid px-0">
+        <div class="alert alert-info mb-0 rounded-0 d-flex align-items-center justify-content-between"
+            style="background:#e8f1fb;border-left:5px solid #1f518a;">
+            <div>
+                <strong>📢 Notice:</strong>
+                Monthly health screening data submission deadline is
+                <strong>30 September 2026</strong>.
+            </div>
+            <a href="#" class="small font-weight-bold text-primary">
+                View Circular
+            </a>
+        </div>
+    </div>
+
+    <!-- ===== BREADCRUMB BAR ===== -->
+    <div class="container-fluid">
+        <nav aria-label="breadcrumb" class="mt-2">
+            <ol class="breadcrumb bg-white shadow-sm mb-0" style="border-left:4px solid #1f518a;">
+                <li class="breadcrumb-item">
+                    <a href="index.html">Dashboard</a>
+                </li>
+
+                <li class="breadcrumb-item active" aria-current="page">
+                    New Screening
+                </li>
+            </ol>
+        </nav>
+    </div>
+
+
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <div class="container-fluid mt-3 mb-5">
+        <div class="card shadow-sm">
+            <div class="card-body">
+
+                <!-- FORM TABS -->
+                <ul class="nav nav-tabs mb-3" id="formTabs">
+                    <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#project"><i
+                                class="bi bi-diagram-3"></i> Project</a></li>
+                    <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#patient"><i
+                                class="bi bi-person"></i> Patient</a></li>
+                    <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#general"><i
+                                class="bi bi-heart-pulse"></i> General</a></li>
+                    <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#gp"><i
+                                class="bi bi-stethoscope"></i> GP</a></li>
+                    <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#special"><i class="bi bi-eye"></i>
+                            Specialty</a></li>
+                    <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#lab"><i class="bi bi-droplet"></i>
+                            Lab</a></li>
+                    <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#report"><i
+                                class="bi bi-file-earmark-text"></i> Report</a></li>
+                    <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#analytics"><i
+                                class="bi bi-graph-up"></i> Analytics</a></li>
+                </ul>
+
+                <form id="healthForm">
+                    <div class="tab-content">
+
+                        <!-- PROJECT -->
+                        <div class="tab-pane fade show active" id="project">
+                            <div class="section-title">Project & Camp Information</div>
+                            <p class="text-muted small">Enter official details of the health camp as per UP Health IEC
+                                guidelines.</p>
+
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label>Project Name</label>
+                                    <input class="form-control" placeholder="e.g. Preventive Health Check-up (UP Govt)">
+                                </div>
+                                <div class="col-md-4">
+                                    <label>District</label>
+                                    <input class="form-control" placeholder="Select district name">
+                                </div>
+                                <div class="col-md-4">
+                                    <label>Camp Date</label>
+                                    <input type="date" class="form-control">
+                                </div>
+                            </div>
+                            <div class="text-right mt-3">
+                                <button type="button" class="btn btn-primary next-tab">Next</button>
+                            </div>
+                        </div>
+
+                        <!-- PATIENT -->
+                        <div class="tab-pane fade" id="patient">
+                            <div class="section-title">Patient Registration</div>
+                            <p class="text-muted small">Patient identification details for report traceability.</p>
+
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <label>UHID</label>
+                                    <input class="form-control" placeholder="Auto / Manual UHID">
+                                </div>
+                                <div class="col-md-3">
+                                    <label>Patient Name</label>
+                                    <input class="form-control" placeholder="Full name as per ID">
+                                </div>
+                                <div class="col-md-2">
+                                    <label>Age</label>
+                                    <input class="form-control" placeholder="Years">
+                                </div>
+                                <div class="col-md-2">
+                                    <label>Gender</label>
+                                    <select class="form-control">
+                                        <option value="">Select</option>
+                                        <option>Male</option>
+                                        <option>Female</option>
+                                        <option>Other</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <label>Mobile</label>
+                                    <input class="form-control" placeholder="10-digit mobile">
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-between mt-3">
+                                <button type="button" class="btn btn-outline-secondary prev-tab">Back</button>
+                                <button type="button" class="btn btn-primary next-tab">Next</button>
+                            </div>
+                        </div>
+
+                        <!-- GENERAL -->
+                        <div class="tab-pane fade" id="general">
+                            <div class="section-title">General Health Check</div>
+                            <p class="text-muted small">Vitals recorded by nursing / paramedical staff.</p>
+
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <label>Oxygen Saturation (SpO₂ %)</label>
+                                    <input class="form-control" placeholder="e.g. 98%">
+                                </div>
+                                <div class="col-md-3">
+                                    <label>Temperature (°C)</label>
+                                    <input class="form-control" placeholder="e.g. 36.8">
+                                </div>
+                                <div class="col-md-2"><label>Height (cm)</label><input class="form-control"
+                                        placeholder="e.g. 165"></div>
+                                <div class="col-md-2"><label>Weight (kg)</label><input class="form-control"
+                                        placeholder="e.g. 60"></div>
+                                <div class="col-md-2"><label>BMI</label><input class="form-control"
+                                        placeholder="Auto / Manual"></div>
+                                <div class="col-md-3"><label>Blood Pressure</label><input class="form-control"
+                                        placeholder="120 / 80"></div>
+                                <div class="col-md-3"><label>Pulse</label><input class="form-control" placeholder="bpm">
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-between mt-3">
+                                <button type="button" class="btn btn-outline-secondary prev-tab">Back</button>
+                                <button type="button" class="btn btn-primary next-tab">Next</button>
+                            </div>
+                        </div>
+
+                        <!-- GP -->
+                        <div class="tab-pane fade" id="gp">
+                            <div class="section-title">GP Screening</div>
+                            <p class="text-muted small">Doctor observations using stethoscope & spirometry.</p>
+
+                            <textarea class="form-control" rows="5"
+                                placeholder="Enter clinical findings, breath sounds, spirometry remarks..."></textarea>
+
+                            <div class="d-flex justify-content-between mt-3">
+                                <button type="button" class="btn btn-outline-secondary prev-tab">Back</button>
+                                <button type="button" class="btn btn-primary next-tab">Next</button>
+                            </div>
+                        </div>
+
+                        <!-- SPECIAL -->
+                        <div class="tab-pane fade" id="special">
+                            <div class="section-title">Specialty Screening</div>
+                            <p class="text-muted small">Results from Audiometry & Ophthalmology screening.</p>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label>Audiometry</label>
+                                    <textarea class="form-control" placeholder="Hearing assessment summary"></textarea>
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Ophthalmology</label>
+                                    <textarea class="form-control"
+                                        placeholder="Vision / eye examination remarks"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-between mt-3">
+                                <button type="button" class="btn btn-outline-secondary prev-tab">Back</button>
+                                <button type="button" class="btn btn-primary next-tab">Next</button>
+                            </div>
+                        </div>
+
+                        <!-- LAB -->
+                        <div class="tab-pane fade" id="lab">
+                            <div class="section-title">
+                                Laboratory Investigations
+                                <span class="badge badge-warning ml-2">Mandatory</span>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <label>Hemoglobin</label>
+                                    <input class="form-control" placeholder="g/dL">
+                                </div>
+                                <div class="col-md-3">
+                                    <label>Blood Sugar (Random)</label>
+                                    <input class="form-control" placeholder="mg/dL">
+                                </div>
+                                <div class="col-md-3">
+                                    <label>HbA1c</label>
+                                    <input class="form-control" placeholder="%">
+                                </div>
+                                <div class="col-md-3">
+                                    <label>Urine Routine</label>
+                                    <select class="form-control">
+                                        <option>Normal</option>
+                                        <option>Abnormal</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="section-title">Haematology Investigation</div>
+                            <p class="text-muted small">Lab values as per collected samples.</p>
+
+                            <div class="row">
+
+                                <div class="row mt-3">
+                                    <div class="col-md-3">
+                                        <label>WBC Count</label>
+                                        <input class="form-control">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label>Platelet Count</label>
+                                        <input class="form-control">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label>ECG</label>
+                                        <select class="form-control">
+                                            <option>Not Done</option>
+                                            <option>Normal</option>
+                                            <option>Abnormal</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label>Chest X-Ray</label>
+                                        <select class="form-control">
+                                            <option>Not Required</option>
+                                            <option>Normal</option>
+                                            <option>Abnormal</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4"><label>Hemoglobin</label><input class="form-control"
+                                        placeholder="g/dL"></div>
+                                <div class="col-md-4"><label>WBC</label><input class="form-control"
+                                        placeholder="cells/µL"></div>
+                                <div class="col-md-4"><label>Platelet</label><input class="form-control"
+                                        placeholder="lakhs/µL"></div>
+                            </div>
+
+                            <div class="d-flex justify-content-between mt-3">
+                                <button type="button" class="btn btn-outline-secondary prev-tab">Back</button>
+                                <button type="button" class="btn btn-primary next-tab">Next</button>
+                            </div>
+                        </div>
+
+                        <!-- REPORT -->
+                        <div class="tab-pane fade" id="report">
+                            <div class="section-title">Consolidated Medical Opinion</div>
+                            <p class="text-muted small">Final diagnosis, advice & referral if required.</p>
+
+                            <textarea class="form-control" rows="6"
+                                placeholder="Doctor's consolidated opinion and recommendations..."></textarea>
+
+                            <div class="d-flex justify-content-between mt-3">
+                                <button type="button" class="btn btn-outline-secondary prev-tab">Back</button>
+                                <button type="button" class="btn btn-primary next-tab">Next</button>
+                            </div>
+                        </div>
+
+                        <!-- ANALYTICS / SUBMIT -->
+                        <div class="tab-pane fade" id="analytics">
+                            <div class="section-title text-success">All Sections Completed</div>
+                            <p class="text-muted">You may now submit and generate the Health Report PDF.</p>
+
+                            <div class="alert alert-warning small">
+                                ⚠️ Some mandatory medical investigations may be pending.
+                                Please review before final submission.
+                            </div>
+
+                            <ul>
+                                <li>✔ Patient data verified</li>
+                                <li>✔ Clinical screening completed</li>
+                                <li>✔ Lab values recorded</li>
+                            </ul>
+
+                            <div class="text-right mt-4">
+                                <a href="report.html" class="btn btn-success btn-lg">
+                                    <i class="bi bi-file-earmark-pdf"></i> Generate PDF
+                                </a>
+                            </div>
+                        </div>
+
+                    </div>
+                </form>
+
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== FOOTER ===== -->
+    <div class="gov-footer d-flex justify-content-between">
+        <span>© Government of Uttar Pradesh – Health Department</span>
+        <span>Generated via Preventive Health IT Platform</span>
+    </div>
+
+    <!-- JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        function goToTab(dir) {
+            let $active = $('.nav-tabs .nav-link.active');
+            let $target = dir === 'next' ? $active.parent().next().find('.nav-link')
+                : $active.parent().prev().find('.nav-link');
+            if ($target.length) $target.tab('show');
+        }
+
+        $('.next-tab').click(() => goToTab('next'));
+        $('.prev-tab').click(() => goToTab('prev'));
+    </script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>UP Govt – Preventive Health Report</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap 4.6 -->
+    <!-- Bootstrap & Icons -->
+     
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
+
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/moment@2.29.4/min/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
+
+    <!-- DataTables JS -->
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+
+
+    <style>
+        :root {
+            --primeColor: #1f518a;
+        }
+
+        body {
+            background: #f4f6f9;
+            font-family: "Segoe UI", Roboto, Arial, sans-serif;
+        }
+
+        /* ===== TOP GOV HEADER ===== */
+        .gov-top-header {
+            background: var(--primeColor);
+            color: #fff;
+            padding: 12px 25px;
+        }
+
+        .gov-top-header h5 {
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .gov-top-header small {
+            opacity: .85;
+        }
+
+        /* ===== NAVBAR ===== */
+        .gov-navbar {
+            background: #ffffff;
+            border-bottom: 2px solid var(--primeColor);
+            padding: 0px 25px;
+        }
+
+        .gov-navbar .nav-link {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .gov-navbar .nav-link:hover {
+            color: var(--primeColor);
+        }
+
+        /* ===== CARD & FORM ===== */
+        .card {
+            border-radius: 8px;
+            
+        }
+
+        .nav-tabs .nav-link {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .nav-tabs .nav-link.active {
+            background: var(--primeColor);
+            color: #fff;
+        }
+
+        .section-title {
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--primeColor);
+        }
+
+        label {
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        /* ===== FOOTER ===== */
+        .gov-footer {
+            background: #ffffff;
+            border-top: 2px solid var(--primeColor);
+            padding: 12px 20px;
+            font-size: 13px;
+            color: #555;
+        }
+
+        /* ===== STICKY ACTION BAR ===== */
+        .footer-btns {
+            position: sticky;
+            bottom: 0;
+            background: #fff;
+            border-top: 1px solid #ddd;
+            padding: 12px;
+            z-index: 99;
+        }
+
+        .nav-item {
+            position: relative;
+            margin-right: 20px;
+            border-radius: 0;
+        }
+
+        .tab-content>.active {
+            display: block;
+            padding: 20px;
+        }
+
+        /* ACTIVE TAB */
+        .nav-tabs .nav-link.active {
+            background: var(--primeColor);
+            color: #fff;
+        }
+
+        /* RIGHT ANGLE */
+        .nav-tabs .nav-link.active::after {
+            content: "";
+            position: absolute;
+            top: 1px;
+            right: -19px;
+            width: 0;
+            height: 0;
+            border-top: 20px solid transparent;
+            border-bottom: 20px solid transparent;
+            border-left: 20px solid var(--primeColor);
+        }
+
+        /* OPTIONAL: LEFT CUT (MORE PREMIUM) */
+        .nav-tabs .nav-link::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-top: 20px solid transparent;
+            border-bottom: 20px solid transparent;
+            border-left: 10px solid #f4f6f9;
+        }
+
+        .nav-tabs .nav-link.active::before {
+            border-left-color: #f4f6f9;
+        }
+
+        .btn {
+            font-size: .9rem !important;
+            padding: 7px 15px !important;
+            min-width: 100px;
+        }
+
+        .btn-success,
+        .btn-primary {
+            color: #fff;
+            background-color: var(--primeColor) !important;
+            border-color: var(--primeColor) !important;
+            min-width: 140px;
+        }
+
+        .nav-tabs {
+            border-bottom: 0px solid #dee2e6;
+        }
+
+        .nav-tabs .nav-link:focus,
+        .nav-tabs .nav-link:hover {
+            isolation: isolate;
+            border-color: white !important;
+        }
+
+        .gov-header {
+            background: linear-gradient(90deg, #1f518a, #163e68);
+            color: #fff;
+            padding: 10px 15px;
+            z-index: 1030;
+        }
+
+        .gov-title {
+            font-weight: 600;
+            font-size: 15px;
+            line-height: 1.2;
+        }
+
+        .gov-subtitle {
+            font-size: 12px;
+            opacity: .9;
+        }
+
+        .gov-logo {
+            font-size: 22px;
+        }
+
+        .gov-notification {
+            position: relative;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .notify-dot {
+            position: absolute;
+            top: 2px;
+            right: 0;
+            width: 7px;
+            height: 7px;
+            background: #ff3b3b;
+            border-radius: 50%;
+        }
+
+        @media(max-width:768px) {
+            .gov-title {
+                font-size: 14px;
+            }
+
+            .gov-subtitle {
+                font-size: 11px;
+            }
+        }
+
+        @media(max-width:768px) {
+            .nav-tabs {
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                overflow-y: hidden;
+            }
+
+            .nav-tabs .nav-item {
+                flex: 0 0 auto;
+            }
+        }
+
+        .gov-header {
+            background: linear-gradient(90deg, #1f518a, #163e68);
+            padding: 0;
+            z-index: 1030;
+        }
+
+        .gov-title {
+            font-weight: 600;
+            font-size: 15px;
+            line-height: 1.2;
+        }
+
+        .gov-subtitle {
+            font-size: 12px;
+            opacity: .9;
+        }
+
+        .gov-logo {
+            font-size: 22px;
+        }
+
+        .gov-menu .nav-link {
+            font-weight: 600;
+            padding: 8px 14px;
+        }
+
+        .gov-menu .nav-link.active {
+            background: rgba(255, 255, 255, .15);
+            border-radius: 4px;
+        }
+
+        .notify-dot {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 8px;
+            height: 8px;
+            background: #ff3b3b;
+            border-radius: 50%;
+        }
+
+        .gov-user-circle {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: #fff;
+            color: #1f518a;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+        }
+
+        .gov-dropdown {
+            min-width: 220px;
+            font-size: 14px;
+        }
+
+        @media(max-width:768px) {
+            .gov-title {
+                font-size: 14px;
+            }
+
+            .gov-subtitle {
+                font-size: 11px;
+            }
+
+            .gov-menu {
+                margin-top: 10px;
+            }
+        }
+
+        /* ===== ANALYTICS ===== */
+        .stat-card h6 {
+            font-size: 13px;
+            color: #555;
+        }
+
+        .stat-card h3 {
+            font-weight: 700;
+        }
+
+        .map-tooltip {
+            position: absolute;
+            background: #1f518a;
+            color: #fff;
+            padding: 6px 10px;
+            font-size: 12px;
+            border-radius: 4px;
+            pointer-events: none;
+            display: none;
+            z-index: 9999;
+        }
+
+        svg rect {
+            cursor: pointer;
+            transition: opacity .15s;
+        }
+
+        svg rect:hover {
+            opacity: .85;
+        }
+
+        /* Map focused layout */
+        .map-card {
+            min-height: 360px;
+        }
+
+        .chart-card {
+            min-height: 260px;
+        }
+
+        td .flex {
+            display: flex;
+            gap: 10px;
+            margin: auto;
+        }
+
+        td .flex .btn {
+            background: #1f518a !important;
+            color: #fff;
+            min-width: none;
+            min-width: unset !important;
+            padding: 3px 20px !important;
+        }
+
+        @media(max-width:768px) {
+
+            .map-card,
+            .chart-card {
+                min-height: auto;
+            }
+        }
+
+        table.dataTable thead>tr>th.sorting, table.dataTable thead>tr>th.sorting_asc, table.dataTable thead>tr>th.sorting_desc, table.dataTable thead>tr>th.sorting_asc_disabled, table.dataTable thead>tr>th.sorting_desc_disabled, table.dataTable thead>tr>td.sorting, table.dataTable thead>tr>td.sorting_asc, table.dataTable thead>tr>td.sorting_desc, table.dataTable thead>tr>td.sorting_asc_disabled, table.dataTable thead>tr>td.sorting_desc_disabled {
+            cursor: pointer;
+            position: relative;
+            padding-right: 26px;
+            background: #1f518a;
+            color: #fff;
+            padding: 7px 10px;
+        }
+        table td, .table th {
+            padding: .5rem !important;
+            vertical-align: top;
+            border-top: 1px solid #dee2e6;
+            font-size: .9rem;
+        }
+
+        .dataTables_length, #resultsTable_filter, #agentTable_filter {
+        display: none;
+    }
+
+    .dataTables_info {
+        margin-left: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+
+    .dataTables_info {
+        background: var(--primeColor) !important;
+        padding: 7px 10px;
+        display: inline-block;
+        color: #fff;
+        border-radius: 3px;
+        margin-left: 0;
+        font-size: 11px;
+    }
+
+    @media screen and (max-width: 767px) {
+        .dataTables_info {
+            margin: auto;
+            width: fit-content;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+    }
+
+    .table-responsive {
+        overflow-x: hidden;
+    }
+
+    .table-responsive .row {
+        overflow: auto;
+    }
+
+    .pagination {
+        margin-top: 20px !important;
+        margin-bottom: 20px !important;
+        display: flex;
+        float: right;
+    }
+
+    .pagination .paginate_button {
+        margin: 5px 5px;
+    }
+
+    .pagination .paginate_button a {
+        border: none;
+        font-weight: 600;
+        font-size: 10px;
+        line-height: 20px;
+        color: #000;
+        border-radius: 4px;
+        padding: 5px 11px;
+        border: 1px solid #ddd;
+    }
+
+    .pagination .paginate_button {
+		margin: 5px 5px;
+	}
+
+	.pagination .paginate_button a {
+		border: none;
+		font-weight: 600;
+		font-size: 10px;
+		line-height: 20px;
+		color: #000;
+		border-radius: 4px;
+		padding: 5px 11px;
+		border: 1px solid #ddd;
+	}
+
+    .pagination .paginate_button.active a {
+		color: #fff;
+		background: var(--primeColor) !important;
+	}
+    </style>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- SVG Map (inline, no external dependency) -->
+    <script src="https://www.gstatic.com/charts/loader.js"></script>
+
+</head>
+
+<body>
+    <!-- ===== GOV HEADER & NAVBAR (DYNAMIC & RESPONSIVE) ===== -->
+    <header class="gov-header sticky-top">
+        <nav class="navbar navbar-expand-lg navbar-dark">
+            <div class="container-fluid">
+
+                <!-- LEFT: LOGO + TITLE -->
+                <div class="d-flex align-items-center">
+                    <span class="gov-logo mr-2">🛡️</span>
+                    <div class="d-none d-sm-block">
+                        <div class="gov-title">Government of Uttar Pradesh</div>
+                        <div class="gov-subtitle">Department of Health & Family Welfare</div>
+                    </div>
+                </div>
+
+                <!-- MOBILE TOGGLE -->
+                <button class="navbar-toggler" type="button"
+        data-toggle="collapse"
+        data-target="#govNav"
+        aria-controls="govNav"
+        aria-expanded="false"
+        aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+</button>
+
+
+                <!-- NAV + ACTIONS -->
+                <div class="collapse navbar-collapse" id="govNav">
+
+
+                    <!-- CENTER MENU -->
+                    <ul class="navbar-nav mx-auto gov-menu">
+                        <li class="nav-item"><a class="nav-link" href="index.html">Analytics</a></li>
+                        <li class="nav-item"><a class="nav-link" href="new_screening.html">New Screening</a></li>
+                        <li class="nav-item"><a class="nav-link active" href="report.html">Reports</a></li>
+                    </ul>
+
+                    <!-- RIGHT ACTIONS -->
+                    <ul class="navbar-nav ml-auto align-items-center">
+
+                        <!-- NOTIFICATION DROPDOWN -->
+                        <li class="nav-item dropdown mr-3">
+                            <a class="nav-link dropdown-toggle position-relative" href="#" data-toggle="dropdown"
+                            >
+                                🔔
+                                <span class="notify-dot"></span>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right gov-dropdown">
+                                <h6 class="dropdown-header">Notifications</h6>
+                                <a class="dropdown-item small" href="#">🧪 Lab results pending</a>
+                                <a class="dropdown-item small" href="#">📄 Report generated</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item text-center small" href="#">View all</a>
+                            </div>
+                        </li>
+
+                        <!-- USER DROPDOWN -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#"
+                            data-toggle="dropdown"
+                            >
+                                <div class="gov-user-circle mr-2">MO</div>
+                                <span class="d-none d-md-inline">Medical Officer</span>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right gov-dropdown">
+                                <div class="px-3 py-2 small text-muted">
+                                    District Hospital<br>
+                                    Role: Medical Officer
+                                </div>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="#">👤 Profile</a>
+                                <a class="dropdown-item" href="#">🔑 Change Password</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item text-danger" href="login.html">🚪 Logout</a>
+                            </div>
+                        </li>
+
+                    </ul>
+                </div>
+
+            </div>
+        </nav>
+    </header>
+    <!-- ===== NOTIFICATION BAR ===== -->
+    <div class="container-fluid px-0">
+        <div class="alert alert-info mb-0 rounded-0 d-flex align-items-center justify-content-between"
+            style="background:#e8f1fb;border-left:5px solid #1f518a;">
+            <div>
+                <strong>📢 Notice:</strong>
+                Monthly health screening data submission deadline is
+                <strong>30 September 2026</strong>.
+            </div>
+            <a href="#" class="small font-weight-bold text-primary">
+                View Circular
+            </a>
+        </div>
+    </div>
+
+    <!-- ===== BREADCRUMB BAR ===== -->
+    <div class="container-fluid">
+        <nav aria-label="breadcrumb" class="mt-2">
+            <ol class="breadcrumb bg-white shadow-sm mb-0" style="border-left:4px solid #1f518a;">
+                <li class="breadcrumb-item">
+                    <a href="index.html">Dashboard</a>
+                </li>
+
+                <li class="breadcrumb-item active" aria-current="page">
+                    Report
+                </li>
+            </ol>
+        </nav>
+    </div>
+
+    <div class="container-fluid mt-4 mb-5">
+
+        <!-- ===== FILTER BAR ===== -->
+        <div class="card p-3 mb-4 shadow-sm">
+            <div class="row align-items-end">
+
+                <!-- DATE RANGE -->
+                <div class="col-md-3 col-sm-6 mb-2">
+                    <label class="small font-weight-bold">Date Range</label>
+                    <input type="date" class="form-control" placeholder="From">
+                </div>
+
+                <div class="col-md-3 col-sm-6 mb-2">
+                    <label class="small font-weight-bold">To</label>
+                    <input type="date" class="form-control">
+                </div>
+
+                <!-- DISTRICT -->
+                <div class="col-md-3 col-sm-6 mb-2">
+                    <label class="small font-weight-bold">District</label>
+                    <select class="form-control">
+                        <option value="">All Districts</option>
+                        <option>Lucknow</option>
+                        <option>Kanpur</option>
+                        <option>Varanasi</option>
+                        <option>Agra</option>
+                        <option>Gorakhpur</option>
+                    </select>
+                </div>
+
+                <!-- CAMP STATUS -->
+                <div class="col-md-3 col-sm-6 mb-2">
+                    <label class="small font-weight-bold">Status</label>
+                    <select class="form-control">
+                        <option value="">All</option>
+                        <option>Completed</option>
+                        <option>Pending</option>
+                        <option>Abnormal</option>
+                    </select>
+                </div>
+
+            </div>
+
+            <!-- ADVANCED FILTER ROW -->
+            <div class="row mt-3">
+
+                <!-- KEYWORD -->
+                <div class="col-md-3 col-sm-6 mb-2">
+                    <input type="text" class="form-control" placeholder="Search by Patient ID / Camp ID / Mobile">
+                </div>
+
+                <!-- CAMP TYPE -->
+                <div class="col-md-3 col-sm-6 mb-2">
+                    <select class="form-control">
+                        <option value="">Camp Type</option>
+                        <option>General Screening</option>
+                        <option>Lab Screening</option>
+                        <option>Specialty Camp</option>
+                    </select>
+                </div>
+
+                <!-- RESET -->
+                <div class="col-md-3 col-sm-6 mb-2 flex" style="display: flex; gap: 10px;">
+                    <button class="btn btn-outline-secondary">
+                        ♻ Reset Filters
+                    </button>
+                    <button class="btn btn-primary">
+                        Apply
+                    </button>
+                </div>
+
+                <!-- ACTIONS -->
+                <div class="col-md-3 col-sm-12 mb-2 text-right">
+
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <div class="container-fluid mt-4 mb-4">
+        <div class="card shadow-sm">
+            <div class="card-body">
+
+                <div class="d-flex justify-content-between mb-3">
+                    <h5 class="page-title">
+                        <i class="bi bi-file-earmark-medical"></i> Generated Health Reports
+                    </h5>
+                    <button class="btn btn-primary btn-sm">
+                        <i class="bi bi-plus-circle"></i> New Screening
+                    </button>
+                </div>
+
+                <table id="reportsTable" class="table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th>Report ID</th>
+                            <th>Patient Name</th>
+                            <th>Age / Gender</th>
+                            <th>District</th>
+                            <th>Camp Date</th>
+                            <th>Status</th>
+                            <th width="160">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+
+            </div>
+        </div>
+    </div>
+
+
+
+    <script>
+        $(function () {
+
+            $('#reportsTable').DataTable({
+                data: [
+                    {
+                        id: 'UPH-2025-001',
+                        name: 'Rahul Kumar',
+                        age: '34 / Male',
+                        district: 'Lucknow',
+                        date: '25-Dec-2025',
+                        status: 'Completed'
+                    },
+                    {
+                        id: 'UPH-2025-002',
+                        name: 'Sunita Devi',
+                        age: '29 / Female',
+                        district: 'Kanpur',
+                        date: '25-Dec-2025',
+                        status: 'Completed'
+                    },
+                    {
+                        id: 'UPH-2025-003',
+                        name: 'Amit Singh',
+                        age: '45 / Male',
+                        district: 'Varanasi',
+                        date: '26-Dec-2025',
+                        status: 'Pending'
+                    }
+                ],
+                columns: [
+                    { data: 'id' },
+                    { data: 'name' },
+                    { data: 'age' },
+                    { data: 'district' },
+                    { data: 'date' },
+                    {
+                        data: 'status',
+                        render: s => s === 'Completed'
+                            ? '<span class="badge badge-success badge-status">Completed</span>'
+                            : '<span class="badge badge-warning badge-status">Pending</span>'
+                    },
+                    {
+                        data: null,
+                        render: () => `
+                    <div class="flex">
+                        <button class="btn btn-sm"><i class="bi bi-eye"></i></button>
+                        <button class="btn btn-sm"><i class="bi bi-file-earmark-pdf"></i></button>
+                        <button class="btn btn-sm"><i class="bi bi-pencil"></i></button>
+                    </div>
+                `
+                    }
+                ]
+            });
+
+        });
+    </script>
+
+    <!-- ===== FOOTER ===== -->
+    <div class="gov-footer d-flex justify-content-between">
+        <span>© Government of Uttar Pradesh – Health Department</span>
+        <span>Generated via Preventive Health IT Platform</span>
+    </div>
+
+
+</body>
+
+</html>
