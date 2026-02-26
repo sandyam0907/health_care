@@ -10,9 +10,7 @@
         <h3 class="card-title"><i class="fa fa-list"></i>&nbsp; Cities List</h3>
       </div>
       <div class="d-inline-block float-right">
-        <?php if($this->rbac->check_operation_permission('city_add')): ?>
           <a href="<?= base_url('admin/location/city/add'); ?>" class="btn btn-success"><i class="fa fa-plus"></i> Add New City</a>
-        <?php endif; ?>
       </div>
     </div>
     <div class="card-body">

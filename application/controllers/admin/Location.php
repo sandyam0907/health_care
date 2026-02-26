@@ -4,7 +4,7 @@ class Location extends MY_Controller
 {
 	function __construct()
 	{
-		parent ::__construct();
+		parent::__construct();
 		$this->load->library('datatable'); // loaded my custom serverside datatable library
 		$this->load->model('admin/location_model', 'location_model');
 	}
@@ -22,29 +22,28 @@ class Location extends MY_Controller
 
 	//-------------------------------------------------------
 	public function country_datatable_json()
-	{				   					   
+	{
 		$records = $this->location_model->get_all_countries();
 		$data = array();
-		$count=0;
-		foreach ($records['data']  as $row) 
-		{  
-			$status = ($row['status'] == 0)? 'Inactive': 'Active'.'<span>';
-			$data[]= array(
+		$count = 0;
+		foreach ($records['data'] as $row) {
+			$status = ($row['status'] == 0) ? 'Inactive' : 'Active' . '<span>';
+			$data[] = array(
 				++$count,
 				$row['name'],
-				'<span class="btn btn-xs btn-success" title="status">'.$status.'<span>',				
-				'<a title="Edit" class="update btn btn-sm btn-warning" href="'.base_url('admin/location/country/edit/'.$row['id']).'"> <i class="fa fa-pencil-square-o"></i></a>
-            	 <a title="Delete" class="delete btn btn-sm btn-danger" href="'.base_url('admin/location/country/del/'.$row['id']).'" onclick="return confirm(\'Do you want to delete ?\')" > <i class="fa fa-trash-o"></i></a>'
+				'<span class="btn btn-xs btn-success" title="status">' . $status . '<span>',
+				'<a title="Edit" class="update btn btn-sm btn-warning" href="' . base_url('admin/location/country/edit/' . $row['id']) . '"> <i class="fa fa-pencil-square-o"></i></a>
+            	 <a title="Delete" class="delete btn btn-sm btn-danger" href="' . base_url('admin/location/country/del/' . $row['id']) . '" onclick="return confirm(\'Do you want to delete ?\')" > <i class="fa fa-trash-o"></i></a>'
 			);
 		}
-		$records['data']=$data;
-		echo json_encode($records);						   
+		$records['data'] = $data;
+		echo json_encode($records);
 	}
 
 	//-----------------------------------------------------
 	public function country_add()
 	{
-		if($this->input->post()){
+		if ($this->input->post()) {
 			$this->form_validation->set_rules('country', 'country', 'trim|is_unique[ci_countries.name]|required');
 			$this->form_validation->set_error_delimiters('<div class="alert alert-danger">', '</div>');
 			if ($this->form_validation->run() === FALSE) {
@@ -61,10 +60,9 @@ class Location extends MY_Controller
 			);
 			$data = $this->security->xss_clean($data);
 			$result = $this->location_model->add_country($data);
-			$this->session->set_flashdata('success','Country has been added successfully');
+			$this->session->set_flashdata('success', 'Country has been added successfully');
 			redirect(base_url('admin/location'));
-		}
-		else{
+		} else {
 			$data['title'] = 'Add Country';
 			$this->load->view('admin/includes/_header', $data);
 			$this->load->view('admin/location/country_add', $data);
@@ -73,10 +71,10 @@ class Location extends MY_Controller
 	}
 
 	//-----------------------------------------------------
-	public function country_edit($id=0)
+	public function country_edit($id = 0)
 	{
 
-		if($this->input->post()){
+		if ($this->input->post()) {
 			$this->form_validation->set_rules('country', 'country', 'trim|required');
 			$this->form_validation->set_error_delimiters('<div class="alert alert-danger">', '</div>');
 			if ($this->form_validation->run() === FALSE) {
@@ -94,10 +92,9 @@ class Location extends MY_Controller
 			);
 			$data = $this->security->xss_clean($data);
 			$result = $this->location_model->edit_country($data, $id);
-			$this->session->set_flashdata('success','Country has been updated successfully');
+			$this->session->set_flashdata('success', 'Country has been updated successfully');
 			redirect(base_url('admin/location'));
-		}
-		else{
+		} else {
 			$data['title'] = 'Update Country';
 			$data['country'] = $this->location_model->get_country_by_id($id);
 			$this->load->view('admin/includes/_header', $data);
@@ -128,30 +125,29 @@ class Location extends MY_Controller
 
 	//-------------------------------------------------------
 	public function state_datatable_json()
-	{				   					   
+	{
 		$records = $this->location_model->get_all_states();
 		$data = array();
-		$count=0;
-		foreach ($records['data']  as $row) 
-		{  
-			$status = ($row['status'] == 0)? 'Inactive': 'Active'.'<span>';
-			$data[]= array(
+		$count = 0;
+		foreach ($records['data'] as $row) {
+			$status = ($row['status'] == 0) ? 'Inactive' : 'Active' . '<span>';
+			$data[] = array(
 				++$count,
 				get_country_name($row['country_id']),
 				$row['name'],
-				'<span class="btn btn-xs btn-success" title="status">'.$status.'<span>',				
-				'<a title="Edit" class="update btn btn-sm btn-warning" href="'.base_url('admin/location/state/edit/'.$row['id']).'"> <i class="fa fa-pencil-square-o"></i></a>
-            	 <a title="Delete" class="delete btn btn-sm btn-danger" href="'.base_url('admin/location/state/del/'.$row['id']).'" onclick="return confirm(\'Do you want to delete ?\')"> <i class="fa fa-trash-o"></i></a>'
+				'<span class="btn btn-xs btn-success" title="status">' . $status . '<span>',
+				'<a title="Edit" class="update btn btn-sm btn-warning" href="' . base_url('admin/location/state/edit/' . $row['id']) . '"> <i class="fa fa-pencil-square-o"></i></a>
+            	 <a title="Delete" class="delete btn btn-sm btn-danger" href="' . base_url('admin/location/state/del/' . $row['id']) . '" onclick="return confirm(\'Do you want to delete ?\')"> <i class="fa fa-trash-o"></i></a>'
 			);
 		}
-		$records['data']=$data;
-		echo json_encode($records);						   
+		$records['data'] = $data;
+		echo json_encode($records);
 	}
 
 	//-----------------------------------------------------
 	public function state_add()
 	{
-		if($this->input->post()){
+		if ($this->input->post()) {
 			$this->form_validation->set_rules('country', 'country', 'trim|required');
 			$this->form_validation->set_rules('state', 'state', 'trim|is_unique[ci_states.name]|required');
 			$this->form_validation->set_error_delimiters('<div class="alert alert-danger">', '</div>');
@@ -169,11 +165,10 @@ class Location extends MY_Controller
 			);
 			$data = $this->security->xss_clean($data);
 			$result = $this->location_model->add_state($data);
-			$this->session->set_flashdata('success','State has been added successfully');
+			$this->session->set_flashdata('success', 'State has been added successfully');
 			redirect(base_url('admin/location/state'));
-		}
-		else{
-			$data['countries'] = $this->location_model->get_countries_list(); 
+		} else {
+			$data['countries'] = $this->location_model->get_countries_list();
 			$data['title'] = 'Add State';
 			$this->load->view('admin/includes/_header', $data);
 			$this->load->view('admin/location/state_add', $data);
@@ -182,10 +177,10 @@ class Location extends MY_Controller
 	}
 
 	//-----------------------------------------------------
-	public function state_edit($id=0)
+	public function state_edit($id = 0)
 	{
 
-		if($this->input->post()){
+		if ($this->input->post()) {
 			$this->form_validation->set_rules('country', 'country', 'trim|required');
 			$this->form_validation->set_rules('state', 'state', 'trim|required');
 			$this->form_validation->set_error_delimiters('<div class="alert alert-danger">', '</div>');
@@ -204,15 +199,14 @@ class Location extends MY_Controller
 			$data = $this->security->xss_clean($data);
 			$result = $this->location_model->edit_state($data, $id);
 
-			if($result){
-				$this->session->set_flashdata('success','State has been updated successfully');
+			if ($result) {
+				$this->session->set_flashdata('success', 'State has been updated successfully');
 				redirect(base_url('admin/location/state'));
 			}
-			
-		}
-		else{
+
+		} else {
 			$data['title'] = 'Update State';
-			$data['countries'] = $this->location_model->get_countries_list(); 
+			$data['countries'] = $this->location_model->get_countries_list();
 			$data['state'] = $this->location_model->get_state_by_id($id);
 			$this->load->view('admin/includes/_header', $data);
 			$this->load->view('admin/location/state_edit', $data);
@@ -242,30 +236,29 @@ class Location extends MY_Controller
 
 	//-------------------------------------------------------
 	public function city_datatable_json()
-	{				   					   
+	{
 		$records = $this->location_model->get_all_cities();
 		$data = array();
-		$count=0;
-		foreach ($records['data']  as $row) 
-		{  
-			$status = ($row['status'] == 0)? 'Inactive': 'Active'.'<span>';
-			$data[]= array(
+		$count = 0;
+		foreach ($records['data'] as $row) {
+			$status = ($row['status'] == 0) ? 'Inactive' : 'Active' . '<span>';
+			$data[] = array(
 				++$count,
 				get_state_name($row['state_id']),
 				$row['name'],
-				'<span class="btn btn-xs btn-success" title="status">'.$status.'<span>',				
-				'<a title="Edit" class="update btn btn-sm btn-warning" href="'.base_url('admin/location/city/edit/'.$row['id']).'"> <i class="fa fa-pencil-square-o"></i></a>
-				<a title="Delete" class="delete btn btn-sm btn-danger" href="'.base_url('admin/location/city/del/'.$row['id']).'" onclick="return confirm(\'Do you want to delete ?\')"> <i class="fa fa-trash-o"></i></a>'
+				'<span class="btn btn-xs btn-success" title="status">' . $status . '<span>',
+				'<a title="Edit" class="update btn btn-sm btn-warning" href="' . base_url('admin/location/city/edit/' . $row['id']) . '"> <i class="fa fa-pencil-square-o"></i></a>
+				<a title="Delete" class="delete btn btn-sm btn-danger" href="' . base_url('admin/location/city/del/' . $row['id']) . '" onclick="return confirm(\'Do you want to delete ?\')"> <i class="fa fa-trash-o"></i></a>'
 			);
 		}
-		$records['data']=$data;
-		echo json_encode($records);						   
+		$records['data'] = $data;
+		echo json_encode($records);
 	}
 
 	//-----------------------------------------------------
 	public function city_add()
 	{
-		if($this->input->post()){
+		if ($this->input->post()) {
 			$this->form_validation->set_rules('city', 'city', 'trim|is_unique[ci_cities.name]|required');
 			$this->form_validation->set_rules('state', 'state', 'trim|required');
 			$this->form_validation->set_error_delimiters('<div class="alert alert-danger">', '</div>');
@@ -283,10 +276,9 @@ class Location extends MY_Controller
 			);
 			$data = $this->security->xss_clean($data);
 			$result = $this->location_model->add_city($data);
-			$this->session->set_flashdata('success','City has been added successfully');
+			$this->session->set_flashdata('success', 'City has been added successfully');
 			redirect(base_url('admin/location/city'));
-		}
-		else{
+		} else {
 			$data['title'] = 'Add City';
 			$data['states'] = $this->location_model->get_states_list();
 			$this->load->view('admin/includes/_header', $data);
@@ -296,9 +288,9 @@ class Location extends MY_Controller
 	}
 
 	//-----------------------------------------------------
-	public function city_edit($id=0)
+	public function city_edit($id = 0)
 	{
-		if($this->input->post()){
+		if ($this->input->post()) {
 			$this->form_validation->set_rules('city', 'city', 'trim|required');
 			$this->form_validation->set_rules('state', 'state', 'trim|required');
 			$this->form_validation->set_error_delimiters('<div class="alert alert-danger">', '</div>');
@@ -316,10 +308,9 @@ class Location extends MY_Controller
 			);
 			$data = $this->security->xss_clean($data);
 			$result = $this->location_model->edit_city($data, $id);
-			$this->session->set_flashdata('success','City has been updated successfully');
+			$this->session->set_flashdata('success', 'City has been updated successfully');
 			redirect(base_url('admin/location/city'));
-		}
-		else{
+		} else {
 			$data['title'] = 'Update City';
 			$data['states'] = $this->location_model->get_states_list();
 			$data['city'] = $this->location_model->get_city_by_id($id);
@@ -335,6 +326,227 @@ class Location extends MY_Controller
 		$this->db->delete('ci_cities', array('id' => $id));
 		$this->session->set_flashdata('success', 'City has been Deleted Successfully!');
 		redirect(base_url('admin/location/city'));
+	}
+
+	// ---------------------------------------------------
+	//                     DISTRICT
+	//-----------------------------------------------------
+
+	function district()
+	{
+		$data['title'] = 'District List';
+		$this->load->view('admin/includes/_header', $data);
+		$this->load->view('admin/location/district_list', $data);
+		$this->load->view('admin/includes/_footer', $data);
+	}
+
+	//-------------------------------------------------------
+	public function district_datatable_json()
+	{
+		$records = $this->location_model->get_all_districts();
+		$data = array();
+		$count = 0;
+
+		foreach ($records['data'] as $row) {
+			$status = ($row['status'] == 0) ? 'Inactive' : 'Active' . '<span>';
+
+			$data[] = array(
+				++$count,
+				$row['district_name'],
+				'<span class="btn btn-xs btn-success">' . $status . '<span>',
+				'<a class="update btn btn-sm btn-warning" href="' . base_url('admin/location/district/edit/' . $row['id']) . '"><i class="fa fa-pencil"></i></a>
+             <a class="delete btn btn-sm btn-danger" href="' . base_url('admin/location/district/del/' . $row['id']) . '" onclick="return confirm(\'Delete?\')"><i class="fa fa-trash"></i></a>'
+			);
+		}
+
+		$records['data'] = $data;
+		echo json_encode($records);
+	}
+
+	//-----------------------------------------------------
+	public function district_add()
+	{
+
+
+		if ($this->input->post()) {
+
+			// print_r($_POST);
+			// die();
+			$this->form_validation->set_rules('district', 'district', 'trim|required');
+
+			if ($this->form_validation->run() === FALSE) {
+				$this->load->view('admin/includes/_header');
+				$this->load->view('admin/location/district_add');
+				$this->load->view('admin/includes/_footer');
+				return;
+			}
+
+			$data = array(
+				'district_name' => ucfirst($this->input->post('district')),
+				'status' => 1
+			);
+
+			$data = $this->security->xss_clean($data);
+			$this->location_model->add_district($data);
+
+			$this->session->set_flashdata('success', 'District added successfully');
+			redirect(base_url('admin/location/district'));
+		} else {
+			$data['title'] = 'Add District';
+			$this->load->view('admin/includes/_header', $data);
+			$this->load->view('admin/location/district_add', $data);
+			$this->load->view('admin/includes/_footer', $data);
+		}
+	}
+
+	//-----------------------------------------------------
+	public function district_edit($id = 0)
+	{
+		if ($this->input->post()) {
+			$this->form_validation->set_rules('district', 'district', 'trim|required');
+
+			if ($this->form_validation->run() === FALSE) {
+				$this->load->view('admin/includes/_header');
+				$this->load->view('admin/location/district_edit');
+				$this->load->view('admin/includes/_footer');
+				return;
+			}
+
+			$data = array(
+				'district_name' => ucfirst($this->input->post('district')),
+				'status' => $this->input->post('status')
+			);
+
+			$data = $this->security->xss_clean($data);
+			$this->location_model->edit_district($data, $id);
+
+			$this->session->set_flashdata('success', 'District updated successfully');
+			redirect(base_url('admin/location/district'));
+		} else {
+			$data['title'] = 'Update District';
+			$data['district'] = $this->location_model->get_district_by_id($id);
+
+			$this->load->view('admin/includes/_header', $data);
+			$this->load->view('admin/location/district_edit', $data);
+			$this->load->view('admin/includes/_footer', $data);
+		}
+	}
+
+	//-----------------------------------------------------
+	public function district_del($id = 0)
+	{
+		$this->db->delete('ci_districts', array('id' => $id));
+		$this->session->set_flashdata('success', 'Deleted successfully!');
+		redirect(base_url('admin/location/district'));
+	}
+
+	// ---------------------------------------------------
+	//                     TALUK
+	//-----------------------------------------------------
+
+	function taluk()
+	{
+		$data['title'] = 'Taluk List';
+		$this->load->view('admin/includes/_header', $data);
+		$this->load->view('admin/location/taluk_list', $data);
+		$this->load->view('admin/includes/_footer', $data);
+	}
+
+	//-------------------------------------------------------
+	public function taluk_datatable_json()
+	{
+		$records = $this->location_model->get_all_taluks();
+		$data = array();
+		$count = 0;
+
+		foreach ($records['data'] as $row) {
+			$status = ($row['status'] == 0) ? 'Inactive' : 'Active';
+
+			$data[] = array(
+				++$count,
+				$row['taluk_name'],
+				'<span class="btn btn-xs btn-success">' . $status . '</span>',
+				'<a class="update btn btn-sm btn-warning" href="' . base_url('admin/location/taluk/edit/' . $row['id']) . '"><i class="fa fa-pencil"></i></a>
+             <a class="delete btn btn-sm btn-danger" href="' . base_url('admin/location/taluk/del/' . $row['id']) . '" onclick="return confirm(\'Delete?\')"><i class="fa fa-trash"></i></a>'
+			);
+		}
+
+		$records['data'] = $data;
+		echo json_encode($records);
+	}
+
+	//-----------------------------------------------------
+	public function taluk_add()
+	{
+		if ($this->input->post()) {
+
+			$this->form_validation->set_rules('taluk', 'taluk', 'trim|required');
+
+			if ($this->form_validation->run() === FALSE) {
+				$this->load->view('admin/includes/_header');
+				$this->load->view('admin/location/taluk_add');
+				$this->load->view('admin/includes/_footer');
+				return;
+			}
+
+			$data = array(
+				'taluk_name' => ucfirst($this->input->post('taluk')),
+				'status' => 1
+			);
+
+			$data = $this->security->xss_clean($data);
+			$this->location_model->add_taluk($data);
+
+			$this->session->set_flashdata('success', 'Taluk added successfully');
+			redirect(base_url('admin/location/taluk'));
+		} else {
+			$data['title'] = 'Add Taluk';
+			$this->load->view('admin/includes/_header', $data);
+			$this->load->view('admin/location/taluk_add', $data);
+			$this->load->view('admin/includes/_footer', $data);
+		}
+	}
+
+	//-----------------------------------------------------
+	public function taluk_edit($id = 0)
+	{
+		if ($this->input->post()) {
+
+			$this->form_validation->set_rules('taluk', 'taluk', 'trim|required');
+
+			if ($this->form_validation->run() === FALSE) {
+				$this->load->view('admin/includes/_header');
+				$this->load->view('admin/location/taluk_edit');
+				$this->load->view('admin/includes/_footer');
+				return;
+			}
+
+			$data = array(
+				'taluk_name' => ucfirst($this->input->post('taluk')),
+				'status' => $this->input->post('status')
+			);
+
+			$data = $this->security->xss_clean($data);
+			$this->location_model->edit_taluk($data, $id);
+
+			$this->session->set_flashdata('success', 'Taluk updated successfully');
+			redirect(base_url('admin/location/taluk'));
+		} else {
+			$data['title'] = 'Update Taluk';
+			$data['taluk'] = $this->location_model->get_taluk_by_id($id);
+
+			$this->load->view('admin/includes/_header', $data);
+			$this->load->view('admin/location/taluk_edit', $data);
+			$this->load->view('admin/includes/_footer', $data);
+		}
+	}
+
+	//-----------------------------------------------------
+	public function taluk_del($id = 0)
+	{
+		$this->db->delete('ci_taluks', array('id' => $id));
+		$this->session->set_flashdata('success', 'Deleted successfully!');
+		redirect(base_url('admin/location/taluk'));
 	}
 
 }

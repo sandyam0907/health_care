@@ -62,7 +62,8 @@ $cur_tab = $this->uri->segment(2)==''?'dashboard': $this->uri->segment(2);
             <li class="nav-item">
               <a href="<?= base_url('admin/'.$nav['controller_name'].'/'.$sub_nav['link']); ?>" class="nav-link">
                 <i class="fa fa-circle-o nav-icon"></i>
-                <p><?= trans($sub_nav['name']) ?></p>
+                <!-- <p><?= trans($sub_nav['name']) ?></p> -->
+                <p><?= ucfirst(str_replace('_',' ', $sub_nav['name'])) ?></p>
               </a>
             </li>
 
