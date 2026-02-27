@@ -235,5 +235,23 @@ class Location_Model extends CI_Model
 		return $this->db->get_where('ci_taluks', ['id' => $id])->row_array();
 	}
 
+	// STATES
+public function get_states_dropdown()
+{
+    return $this->db->get('ci_states')->result();
+}
+
+// DISTRICTS
+public function get_districts_dropdown()
+{
+    return $this->db->get('ci_districts')->result();
+}
+
+// TALUKS
+public function get_taluks_dropdown()
+{
+    return $this->db->get('ci_taluks')->result();
+}
+
 }
 ?>
