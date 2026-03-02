@@ -15,62 +15,79 @@ class New_screening extends My_Controller
         //$this->load->model('user/dashboard_model', 'dashboard_model');
         $this->load->model('admin/Location_Model', 'location');
         $this->load->model('user/New_Screening_model', 'screening_model');
-        
+
 
     }
 
     // ===========================================================================
 
-public function index()
-{
-    $data['title'] = 'New Screening';
+    public function index()
+    {
+        $data['title'] = 'New Screening';
 
-    // ✅ FROM DB
-    $data['states'] = $this->location->get_states_dropdown();
-    $data['districts'] = $this->location->get_districts_dropdown();
-    $data['taluks'] = $this->location->get_taluks_dropdown();
+        // ✅ FROM DB
+        $data['states'] = $this->location->get_states_dropdown();
+        $data['districts'] = $this->location->get_districts_dropdown();
+        $data['taluks'] = $this->location->get_taluks_dropdown();
 
-    $data['patients'] = $this->db->get('patients')->result();
+        $data['patients'] = $this->db->get('patients')->result();
 
-    $data['users'] = [
-        ['id' => 1, 'name' => 'Doctor A'],
-        ['id' => 2, 'name' => 'Nurse B'],
-        ['id' => 3, 'name' => 'Field Staff C'],
-    ];
+        $project_id = $this->session->userdata('project_id');
 
-    $this->load->view('user/includes/_header', $data);
-    $this->load->view('user/new_screening', $data);
-    $this->load->view('user/includes/_footer');
-}
+        if ($project_id) {
+            $data['project'] = $this->db
+                ->get_where('projects', ['id' => $project_id])
+                ->row();
+        } else {
+            $data['project'] = null;
+        }
+
+
+        // echo $this->session->userdata('project_id');
+
+        $data['users'] = [
+            ['id' => 1, 'name' => 'Doctor A'],
+            ['id' => 2, 'name' => 'Nurse B'],
+            ['id' => 3, 'name' => 'Field Staff C'],
+        ];
+
+        $this->load->view('user/includes/_header', $data);
+        $this->load->view('user/new_screening', $data);
+        $this->load->view('user/includes/_footer');
+    }
 
     public function add()
     {
-         $this->load->library('upload');
+
+        $this->load->library('upload');
         //  ===========================================================================
         // 1. PROJECT
         //  ===========================================================================
-        $project_data = [
-            'project_name' => $this->input->post('name'),
-            'state_name' => $this->input->post('state_name'),
-            'district_name' => $this->input->post('district_name'),
-            'taluk_name' => $this->input->post('taluk_name'),
-            'pincode' => $this->input->post('pincode'),
-            'work_order_id' => $this->input->post('program_work_order_id'),
-            'camp_date' => $this->input->post('camp_date'),
-            'location' => $this->input->post('location'),
-            'activity_nature_id' => implode(',', (array) $this->input->post('activity_nature')),
-            'activity_type_id' => implode(',', (array) $this->input->post('type_of_activity')),
-            'user_id' => implode(',', (array) $this->input->post('assign_users')),
-            'form_id' => $this->input->post('select_form'),
-            'status' => 1,
-            'created_at' => date('Y-m-d H:i:s')
-        ];
-
-        $project_id = $this->screening_model->insert_project($project_data);
+        $project_id = $this->session->userdata('project_id');
 
         if (!$project_id) {
-            print_r($this->db->error());
-            exit;
+
+            $project_data = [
+                'project_name' => $this->input->post('name'),
+                'state_name' => $this->input->post('state_name'),
+                'district_name' => $this->input->post('district_name'),
+                'taluk_name' => $this->input->post('taluk_name'),
+                'pincode' => $this->input->post('pincode'),
+                'work_order_id' => $this->input->post('program_work_order_id'),
+                'camp_date' => $this->input->post('camp_date'),
+                'location' => $this->input->post('location'),
+                'activity_nature_id' => implode(',', (array) $this->input->post('activity_nature')),
+                'activity_type_id' => implode(',', (array) $this->input->post('type_of_activity')),
+                'user_id' => implode(',', (array) $this->input->post('assign_users')),
+                'form_id' => $this->input->post('select_form'),
+                'status' => 1,
+                'created_at' => date('Y-m-d H:i:s')
+            ];
+
+            $project_id = $this->screening_model->insert_project($project_data);
+
+            // ✅ store in session
+            $this->session->set_userdata('project_id', $project_id);
         }
 
         //  ===========================================================================
@@ -186,10 +203,10 @@ public function index()
             'bonemass' => $this->input->post('bonemass'),
             'muscle' => $this->input->post('muscle'),
             'vfat' => $this->input->post('vfat'),
-            'systolic_bp' =>$this->input->post('systolic_bp'),
-            'diastolic_bp' =>$this->input->post('diastolic_bp'),
-            'pulse' =>$this->input->post('pulse'),
-            'spo2' =>$this->input->post('spo2'),
+            'systolic_bp' => $this->input->post('systolic_bp'),
+            'diastolic_bp' => $this->input->post('diastolic_bp'),
+            'pulse' => $this->input->post('pulse'),
+            'spo2' => $this->input->post('spo2'),
             'temperature' => $this->input->post('temperature'),
             'metabolic_age' => $this->input->post('metabolic_age'),
             'basal_metabolic_age' => $this->input->post('basal_metabolic_age'),
@@ -270,7 +287,7 @@ public function index()
         // DONE
         //  ===========================================================================
         $this->session->set_flashdata('success', 'Screening saved successfully');
-        redirect('user/new_screening');
+        redirect('user/new_screening?tab=patient');
     }
 
     // GET Patient by Id
@@ -281,6 +298,15 @@ public function index()
         $patient = $this->screening_model->get_patient_by_id($id);
 
         echo json_encode($patient);
+    }
+
+    public function finish_camp()
+    {
+        $this->session->unset_userdata('project_id');
+
+        $this->session->set_flashdata('success', 'Camp finished');
+
+        redirect('user/new_screening');
     }
 
 }

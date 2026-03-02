@@ -69,7 +69,7 @@
 
                         <div class="col-md-3 mb-3">
                             <label>Name *</label>
-                            <input type="text" name="name" class="form-control" required>
+                            <input type="text" name="name" class="form-control">
                         </div>
 
                         <div class="col-md-3 mb-3">
@@ -163,7 +163,7 @@
 
                     </div>
                     <div class="text-right mt-3">
-                        <button type="button" class="btn btn-primary next-tab">Next</button>
+                      <button type="button" class="btn btn-primary next-tab" data-next="#patient">Next</button>
                     </div>
                 </div>
 
@@ -290,8 +290,8 @@
                             </div>
                         </div>
                         <div class="d-flex justify-content-between mt-3">
-                            <button type="button" class="btn btn-outline-secondary prev-tab">Back</button>
-                            <button type="button" class="btn btn-primary next-tab">Next</button>
+                            <button type="button" class="btn btn-outline-secondary prev-tab "data-prev="#project">Back</button>
+                            <button type="button" class="btn btn-primary next-tab" data-next="#general">Next</button>
                         </div>
                     </div>
                 </div>
@@ -400,8 +400,8 @@
                         </div>
                     </div>
                     <div class="d-flex justify-content-between mt-3">
-                        <button type="button" class="btn btn-outline-secondary prev-tab">Back</button>
-                        <button type="button" class="btn btn-primary next-tab">Next</button>
+                        <button type="button" class="btn btn-outline-secondary prev-tab"data-prev="#general">Back</button>
+                        <button type="button" class="btn btn-primary next-tab "data-next="#gp">Next</button>
                     </div>
                 </div>
 
@@ -569,8 +569,8 @@
                         </div>
                     </div>
                     <div class="d-flex justify-content-between mt-3">
-                        <button type="button" class="btn btn-outline-secondary prev-tab">Back</button>
-                        <button type="button" class="btn btn-primary next-tab">Next</button>
+                        <button type="button" class="btn btn-outline-secondary prev-tab"data-prev="#gp">Back</button>
+                        <button type="button" class="btn btn-primary next-tab"data-next="#special">Next</button>
                     </div>
                 </div>
 
@@ -764,8 +764,8 @@
                     </div>
 
                     <div class="d-flex justify-content-between mt-3">
-                        <button type="button" class="btn btn-outline-secondary prev-tab">Back</button>
-                        <button type="button" class="btn btn-primary next-tab">Next</button>
+                        <button type="button" class="btn btn-outline-secondary prev-tab"data-prev="#special">Back</button>
+                        <button type="button" class="btn btn-primary next-tab"data-next="#lab">Next</button>
                     </div>
                 </div>
 
@@ -831,8 +831,8 @@
                         </div>
                     </div>
                     <div class="d-flex justify-content-between mt-3">
-                        <button type="button" class="btn btn-outline-secondary prev-tab">Back</button>
-                        <button type="button" class="btn btn-primary next-tab">Next</button>
+                        <button type="button" class="btn btn-outline-secondary prev-tab"data-prev="#lab">Back</button>
+                        <button type="button" class="btn btn-primary next-tab"data-next="#report">Next</button>
                     </div>
                 </div>
 
@@ -847,8 +847,8 @@
                         placeholder="Doctor's consolidated opinion and recommendations..."></textarea>
 
                     <div class="d-flex justify-content-between mt-3">
-                        <button type="button" class="btn btn-outline-secondary prev-tab">Back</button>
-                        <button type="button" class="btn btn-primary next-tab">Next</button>
+                        <button type="button" class="btn btn-outline-secondary prev-tab" data-next="#report">Back</button>
+                        <button type="button" class="btn btn-primary next-tab" data-next="#analytics">Next</button>
                     </div>
                 </div>
 
@@ -869,12 +869,15 @@
                         <li>✔ Clinical screening completed</li>
                         <li>✔ Lab values recorded</li>
                     </ul>
-
+                    <a href="report.html" class="btn btn-success btn-lg"><i class="bi bi-file-earmark-pdf"></i>
+                        Generate PDF
+                    </a>
                     <div class="text-right mt-4">
                         <button type="submit" class="btn btn-success">Submit</button>
-                        <a href="report.html" class="btn btn-success btn-lg"><i class="bi bi-file-earmark-pdf"></i>
-                            Generate PDF
-                        </a>
+
+                        <button type="button" class="btn btn-danger" id="finishCamp">
+                            Finish Camp
+                        </button>
                     </div>
                 </div>
             </div>
@@ -890,59 +893,119 @@
     $('.select2').select2();
 </script>
 <script>
-    $('input[name="patient_type"]').on('change', function () {
+    $(document).ready(function () {
+        // =========================
+        // PATIENT TYPE TOGGLE
+        // =========================
+        $('input[name="patient_type"]').on('change', function () {
 
-        if ($(this).val() === 'existing') {
+            if ($(this).val() === 'existing') {
 
-            $('#existing_patient_box').show();
-            $('#patient_section input').prop('readonly', false);
-            $('#patient_section select').prop('disabled', false);
+                $('#existing_patient_box').show();
 
-        } else {
-            $('#existing_patient_box').hide();
-            $('#patient_section input').prop('readonly', false);
-            $('#patient_section select').prop('disabled', false);
-            $('#patient_section').find('input[type="text"], input[type="number"], select').val('');
+            } else {
+
+                $('#existing_patient_box').hide();
+
+                // clear fields
+                $('#patient_section')
+                    .find('input[type="text"], input[type="number"], select')
+                    .val('');
+            }
+        });
+
+
+        // =========================
+        // FETCH EXISTING PATIENT
+        // =========================
+        $('#existing_patient').on('change', function () {
+
+            let id = $(this).val();
+            console.log("Selected ID:", id);
+
+            if (!id) return;
+
+            let csrfName = $('input[name="<?= $this->security->get_csrf_token_name(); ?>"]').attr('name');
+            let csrfHash = $('input[name="<?= $this->security->get_csrf_token_name(); ?>"]').val();
+
+            $.ajax({
+                url: "<?= base_url('user/new_screening/get_patient') ?>",
+                type: "POST",
+                data: {
+                    id: id,
+                    [csrfName]: csrfHash
+                },
+                dataType: "json",
+                success: function (res) {
+
+                    console.log("Response:", res);
+
+                    // BASIC
+                    $('#first_name').val(res.first_name);
+                    $('#last_name').val(res.last_name);
+                    $('#age').val(res.age);
+                    $('#gender').val(res.gender);
+                    $('#mobile').val(res.mobile);
+
+                    // LABOUR
+                    $('input[name="labour_id"]').val(res.labour_id);
+                    $('select[name="labour_id_type"]').val(res.labour_id_type);
+
+                    // KYC
+                    $('select[name="kyc_type"]').val(res.kyc_type);
+                    $('input[name="kyc_no"]').val(res.kyc_no);
+                }
+            });
+        });
+
+
+        // =========================
+        // TAB NAVIGATION (NEXT)
+        // =========================
+         $('.next-tab').click(function () {
+        let nextTab = $(this).data('next');
+
+        if (nextTab) {
+            $('.nav-tabs a[href="' + nextTab + '"]').tab('show');
         }
     });
 
-    $('#existing_patient').on('change', function () {
+    
 
-        let id = $(this).val();
-        console.log("Selected ID:", id);
-        if (!id) return;
 
-        let csrfName = $('input[name="<?= $this->security->get_csrf_token_name(); ?>"]').attr('name');
-        let csrfHash = $('input[name="<?= $this->security->get_csrf_token_name(); ?>"]').val();
+        // =========================
+        // TAB NAVIGATION (PREVIOUS)
+        // =========================
+    $('.prev-tab').click(function () {
+        let prevTab = $(this).data('prev');
 
-        $.ajax({
-            url: "<?= base_url('user/new_screening/get_patient') ?>",
-            type: "POST",
-            data: {
-                id: id,
-                [csrfName]: csrfHash 
-            },
-            dataType: "json",
-            success: function (res) {
+        if (prevTab) {
+            $('.nav-tabs a[href="' + prevTab + '"]').tab('show');
+        }
+    });
 
-    console.log("Response:", res);
+        // =========================
+        // OPEN TAB AFTER REDIRECT
+        // =========================
+        let urlParams = new URLSearchParams(window.location.search);
+        let tab = urlParams.get('tab');
 
-    // BASIC
-    $('#first_name').val(res.first_name);
-    $('#last_name').val(res.last_name);
-    $('#age').val(res.age);
-    $('#gender').val(res.gender);
-    $('#mobile').val(res.mobile);
+        if (tab === 'patient') {
+            $('.nav-tabs a[href="#patient"]').tab('show');
+        }
 
-    // LABOUR
-    $('input[name="labour_id"]').val(res.labour_id);
-    $('select[name="labour_id_type"]').val(res.labour_id_type);
 
-    // KYC
-    $('select[name="kyc_type"]').val(res.kyc_type);
-    $('input[name="kyc_no"]').val(res.kyc_no);
+        // =========================
+        // FINISH CAMP
+        // =========================
+        $('#finishCamp').click(function () {
 
-}
+            if (confirm("Finish this camp?")) {
+
+                window.location.href = "<?= base_url('user/new_screening/finish_camp') ?>";
+
+            }
         });
+
     });
 </script>
