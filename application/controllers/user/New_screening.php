@@ -25,7 +25,7 @@ class New_screening extends My_Controller
     {
         $data['title'] = 'New Screening';
 
-        // ✅ FROM DB
+        // FROM DB
         $data['states'] = $this->location->get_states_dropdown();
         $data['districts'] = $this->location->get_districts_dropdown();
         $data['taluks'] = $this->location->get_taluks_dropdown();
@@ -34,14 +34,7 @@ class New_screening extends My_Controller
 
         $project_id = $this->session->userdata('project_id');
 
-        if ($project_id) {
-            $data['project'] = $this->db
-                ->get_where('projects', ['id' => $project_id])
-                ->row();
-        } else {
-            $data['project'] = null;
-        }
-
+        $data['project'] = $this->screening_model->get_project_by_id($project_id);
 
         // echo $this->session->userdata('project_id');
 
@@ -84,9 +77,9 @@ class New_screening extends My_Controller
                 'created_at' => date('Y-m-d H:i:s')
             ];
 
-            $project_id = $this->screening_model->insert_project($project_data);
+            $project_id = $this->screening_model->add_project($project_data);
 
-            // ✅ store in session
+            // store in session
             $this->session->set_userdata('project_id', $project_id);
         }
 
@@ -123,7 +116,7 @@ class New_screening extends My_Controller
             }
         }
 
-        // ================= EXISTING =================
+        // Existing Patient
         if ($patient_type == 'existing') {
 
             $patient_id = $this->input->post('existing_patient_id');
@@ -147,11 +140,9 @@ class New_screening extends My_Controller
                 $update_data['kyc_file'] = $kyc_file;
             }
 
-            $this->screening_model->update_patient($patient_id, $update_data);
+            $this->screening_model->edit_patient($patient_id, $update_data);
         }
-
-
-        // ================= NEW =================
+        // NEW add patient 
         else {
 
             // your existing insert code
@@ -170,7 +161,7 @@ class New_screening extends My_Controller
                 'created_at' => date('Y-m-d H:i:s')
             ];
 
-            $patient_id = $this->screening_model->insert_patient($patient_data);
+            $patient_id = $this->screening_model->add_patient($patient_data);
         }
 
         // ===========================================================================
@@ -185,8 +176,8 @@ class New_screening extends My_Controller
             'created_at' => date('Y-m-d H:i:s')
         ];
 
-        $this->db->insert('screenings', $screening_data);
-        $screening_id = $this->db->insert_id();
+        $screening_id= $this->screening_model->add_screening($screening_data);
+        
 
         //  ===========================================================================
         // 4. GENERAL
@@ -213,7 +204,7 @@ class New_screening extends My_Controller
             'created_at' => date('Y-m-d H:i:s')
         ];
 
-        $this->screening_model->insert_general($general_data);
+        $this->screening_model->add_general($general_data);
 
         //  ===========================================================================
         // 5. GP
@@ -232,7 +223,7 @@ class New_screening extends My_Controller
             'created_at' => date('Y-m-d H:i:s')
         ];
 
-        $this->screening_model->insert_gp($gp_data);
+        $this->screening_model->add_gp($gp_data);
 
         //  ===========================================================================
         // 6. SPECIAL
@@ -261,7 +252,7 @@ class New_screening extends My_Controller
             'created_at' => date('Y-m-d H:i:s')
         ];
 
-        $this->screening_model->insert_special($special_data);
+        $this->screening_model->add_special($special_data);
 
         //  ===========================================================================
         // 7. LAB
@@ -281,7 +272,7 @@ class New_screening extends My_Controller
             'created_at' => date('Y-m-d H:i:s')
         ];
 
-        $this->screening_model->insert_lab($lab_data);
+        $this->screening_model->add_lab($lab_data);
 
         //  ===========================================================================
         // DONE
