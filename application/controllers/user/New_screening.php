@@ -85,7 +85,7 @@ class New_screening extends My_Controller
 
         //  ===========================================================================
         // 2. PATIENT
-        //  ===========================================================================
+        //  ===== ======================================================================
         $patient_type = $this->input->post('patient_type');
         // FILE UPLOAD - LABOUR
         $labour_file = '';
@@ -120,27 +120,33 @@ class New_screening extends My_Controller
         if ($patient_type == 'existing') {
 
             $patient_id = $this->input->post('existing_patient_id');
-            $update_data = [
-                'first_name' => $this->input->post('first_name'),
-                'last_name' => $this->input->post('last_name'),
-                'age' => $this->input->post('age'),
-                'gender' => $this->input->post('gender'),
-                'mobile' => $this->input->post('mobile'),
-                'labour_id' => $this->input->post('labour_id'),
-                'labour_id_type' => $this->input->post('labour_id_type'),
-                'kyc_type' => $this->input->post('kyc_type'),
-                'kyc_no' => $this->input->post('kyc_no'),
-            ];
+            $is_updated = $this->input->post('is_patient_updated');
 
-            if ($labour_file) {
-                $update_data['labour_id_file'] = $labour_file;
+            // ONLY UPDATE IF USER EDITED
+            if ($is_updated == 1) {
+
+                $update_data = [
+                    'first_name' => $this->input->post('first_name'),
+                    'last_name' => $this->input->post('last_name'),
+                    'age' => $this->input->post('age'),
+                    'gender' => $this->input->post('gender'),
+                    'mobile' => $this->input->post('mobile'),
+                    'labour_id' => $this->input->post('labour_id'),
+                    'labour_id_type' => $this->input->post('labour_id_type'),
+                    'kyc_type' => $this->input->post('kyc_type'),
+                    'kyc_no' => $this->input->post('kyc_no'),
+                ];
+
+                if ($labour_file) {
+                    $update_data['labour_id_file'] = $labour_file;
+                }
+
+                if ($kyc_file) {
+                    $update_data['kyc_file'] = $kyc_file;
+                }
+
+                $this->screening_model->edit_patient($patient_id, $update_data);
             }
-
-            if ($kyc_file) {
-                $update_data['kyc_file'] = $kyc_file;
-            }
-
-            $this->screening_model->edit_patient($patient_id, $update_data);
         }
         // NEW add patient 
         else {
@@ -176,8 +182,8 @@ class New_screening extends My_Controller
             'created_at' => date('Y-m-d H:i:s')
         ];
 
-        $screening_id= $this->screening_model->add_screening($screening_data);
-        
+        $screening_id = $this->screening_model->add_screening($screening_data);
+
 
         //  ===========================================================================
         // 4. GENERAL

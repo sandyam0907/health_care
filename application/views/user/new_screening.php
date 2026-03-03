@@ -56,6 +56,7 @@
             </ul>
 
             <?php echo form_open(base_url('user/new_screening/add'), ['id' => 'healthForm', 'enctype' => 'multipart/form-data']); ?>
+            <input type="hidden" name="is_patient_updated" id="is_patient_updated" value="0">
             <div class="tab-content">
 
                 <!-- ---------------------------------------------------------------------------------------------------------- -->
@@ -163,7 +164,7 @@
 
                     </div>
                     <div class="text-right mt-3">
-                      <button type="button" class="btn btn-primary next-tab" data-next="#patient">Next</button>
+                        <button type="button" class="btn btn-primary next-tab" data-next="#patient">Next</button>
                     </div>
                 </div>
 
@@ -290,8 +291,21 @@
                             </div>
                         </div>
                         <div class="d-flex justify-content-between mt-3">
-                            <button type="button" class="btn btn-outline-secondary prev-tab "data-prev="#project">Back</button>
-                            <button type="button" class="btn btn-primary next-tab" data-next="#general">Next</button>
+
+                            <button type="button" class="btn btn-outline-secondary prev-tab"
+                                data-prev="#project">Back</button>
+
+                            <div>
+                                <button type="button" id="updateBtn" class="btn btn-warning mr-2"
+                                    style="display:none;">
+                                    Update Patient
+                                </button>
+
+                                <button type="button" class="btn btn-primary next-tab" data-next="#general">
+                                    Next
+                                </button>
+                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -400,8 +414,9 @@
                         </div>
                     </div>
                     <div class="d-flex justify-content-between mt-3">
-                        <button type="button" class="btn btn-outline-secondary prev-tab"data-prev="#general">Back</button>
-                        <button type="button" class="btn btn-primary next-tab "data-next="#gp">Next</button>
+                        <button type="button" class="btn btn-outline-secondary prev-tab"
+                            data-prev="#general">Back</button>
+                        <button type="button" class="btn btn-primary next-tab " data-next="#gp">Next</button>
                     </div>
                 </div>
 
@@ -569,8 +584,8 @@
                         </div>
                     </div>
                     <div class="d-flex justify-content-between mt-3">
-                        <button type="button" class="btn btn-outline-secondary prev-tab"data-prev="#gp">Back</button>
-                        <button type="button" class="btn btn-primary next-tab"data-next="#special">Next</button>
+                        <button type="button" class="btn btn-outline-secondary prev-tab" data-prev="#gp">Back</button>
+                        <button type="button" class="btn btn-primary next-tab" data-next="#special">Next</button>
                     </div>
                 </div>
 
@@ -764,8 +779,9 @@
                     </div>
 
                     <div class="d-flex justify-content-between mt-3">
-                        <button type="button" class="btn btn-outline-secondary prev-tab"data-prev="#special">Back</button>
-                        <button type="button" class="btn btn-primary next-tab"data-next="#lab">Next</button>
+                        <button type="button" class="btn btn-outline-secondary prev-tab"
+                            data-prev="#special">Back</button>
+                        <button type="button" class="btn btn-primary next-tab" data-next="#lab">Next</button>
                     </div>
                 </div>
 
@@ -831,8 +847,8 @@
                         </div>
                     </div>
                     <div class="d-flex justify-content-between mt-3">
-                        <button type="button" class="btn btn-outline-secondary prev-tab"data-prev="#lab">Back</button>
-                        <button type="button" class="btn btn-primary next-tab"data-next="#report">Next</button>
+                        <button type="button" class="btn btn-outline-secondary prev-tab" data-prev="#lab">Back</button>
+                        <button type="button" class="btn btn-primary next-tab" data-next="#report">Next</button>
                     </div>
                 </div>
 
@@ -847,7 +863,8 @@
                         placeholder="Doctor's consolidated opinion and recommendations..."></textarea>
 
                     <div class="d-flex justify-content-between mt-3">
-                        <button type="button" class="btn btn-outline-secondary prev-tab" data-next="#report">Back</button>
+                        <button type="button" class="btn btn-outline-secondary prev-tab"
+                            data-next="#report">Back</button>
                         <button type="button" class="btn btn-primary next-tab" data-next="#analytics">Next</button>
                     </div>
                 </div>
@@ -893,119 +910,136 @@
     $('.select2').select2();
 </script>
 <script>
-    $(document).ready(function () {
-        // =========================
-        // PATIENT TYPE TOGGLE
-        // =========================
-        $('input[name="patient_type"]').on('change', function () {
+$(document).ready(function () {
+    // =========================
+    // CSRF TOKEN
+    // =========================
+    let csrfName = $('input[name="<?= $this->security->get_csrf_token_name(); ?>"]').attr('name');
+    let csrfHash = $('input[name="<?= $this->security->get_csrf_token_name(); ?>"]').val();
 
-            if ($(this).val() === 'existing') {
+    // =========================
+    // PATIENT TYPE TOGGLE
+    // =========================
+    $('input[name="patient_type"]').change(function () {
 
-                $('#existing_patient_box').show();
+        let type = $(this).val();
+        console.log("Selected:", type);
 
-            } else {
+        if (type === 'existing') {
 
-                $('#existing_patient_box').hide();
+            $('#existing_patient_box').show();
 
-                // clear fields
-                $('#patient_section')
-                    .find('input[type="text"], input[type="number"], select')
-                    .val('');
+        } else {
+
+            $('#existing_patient_box').hide();
+
+            // clear + enable
+            $('#patient_section')
+                .find('input, select')
+                .val('')
+                .prop('disabled', false);
+
+            $('#updateBtn').hide();
+            $('#is_patient_updated').val(0);
+        }
+    });
+
+    // =========================
+    // FETCH EXISTING PATIENT
+    // =========================
+    $('#existing_patient').change(function () {
+
+        let id = $(this).val();
+        if (!id) return;
+
+        $.ajax({
+            url: "<?= base_url('user/new_screening/get_patient') ?>",
+            type: "POST",
+            data: {
+                id: id,
+                [csrfName]: csrfHash
+            },
+            dataType: "json",
+            success: function (res) {
+
+                // fill data
+                $('#first_name').val(res.first_name);
+                $('#last_name').val(res.last_name);
+                $('#age').val(res.age);
+                $('#gender').val(res.gender);
+                $('#mobile').val(res.mobile);
+
+                $('input[name="labour_id"]').val(res.labour_id);
+                $('select[name="labour_id_type"]').val(res.labour_id_type);
+
+                $('select[name="kyc_type"]').val(res.kyc_type);
+                $('input[name="kyc_no"]').val(res.kyc_no);
+
+                // disable fields (readonly)
+                $('#patient_section input, #patient_section select').prop('disabled', true);
+
+                // show update button
+                $('#updateBtn').show();
+
+                // reset flag
+                $('#is_patient_updated').val(0);
+
+                // 🔁 UPDATE CSRF TOKEN (IMPORTANT)
+                csrfHash = $('input[name="<?= $this->security->get_csrf_token_name(); ?>"]').val();
             }
         });
+    });
 
+    // =========================
+    // UPDATE BUTTON CLICK
+    // =========================
+    $('#updateBtn').click(function () {
 
-        // =========================
-        // FETCH EXISTING PATIENT
-        // =========================
-        $('#existing_patient').on('change', function () {
+        // enable fields
+        $('#patient_section input, #patient_section select').prop('disabled', false);
 
-            let id = $(this).val();
-            console.log("Selected ID:", id);
+        // mark updated
+        $('#is_patient_updated').val(1);
 
-            if (!id) return;
+        alert("Now you can edit patient details");
+    });
 
-            let csrfName = $('input[name="<?= $this->security->get_csrf_token_name(); ?>"]').attr('name');
-            let csrfHash = $('input[name="<?= $this->security->get_csrf_token_name(); ?>"]').val();
-
-            $.ajax({
-                url: "<?= base_url('user/new_screening/get_patient') ?>",
-                type: "POST",
-                data: {
-                    id: id,
-                    [csrfName]: csrfHash
-                },
-                dataType: "json",
-                success: function (res) {
-
-                    console.log("Response:", res);
-
-                    // BASIC
-                    $('#first_name').val(res.first_name);
-                    $('#last_name').val(res.last_name);
-                    $('#age').val(res.age);
-                    $('#gender').val(res.gender);
-                    $('#mobile').val(res.mobile);
-
-                    // LABOUR
-                    $('input[name="labour_id"]').val(res.labour_id);
-                    $('select[name="labour_id_type"]').val(res.labour_id_type);
-
-                    // KYC
-                    $('select[name="kyc_type"]').val(res.kyc_type);
-                    $('input[name="kyc_no"]').val(res.kyc_no);
-                }
-            });
-        });
-
-
-        // =========================
-        // TAB NAVIGATION (NEXT)
-        // =========================
-         $('.next-tab').click(function () {
+    // =========================
+    // TAB NEXT
+    // =========================
+    $('.next-tab').click(function () {
         let nextTab = $(this).data('next');
-
         if (nextTab) {
             $('.nav-tabs a[href="' + nextTab + '"]').tab('show');
         }
     });
 
-    
-
-
-        // =========================
-        // TAB NAVIGATION (PREVIOUS)
-        // =========================
+    // =========================
+    // TAB PREVIOUS
+    // =========================
     $('.prev-tab').click(function () {
         let prevTab = $(this).data('prev');
-
         if (prevTab) {
             $('.nav-tabs a[href="' + prevTab + '"]').tab('show');
         }
     });
 
-        // =========================
-        // OPEN TAB AFTER REDIRECT
-        // =========================
-        let urlParams = new URLSearchParams(window.location.search);
-        let tab = urlParams.get('tab');
+    // =========================
+    // OPEN TAB AFTER REDIRECT
+    // =========================
+    let tab = new URLSearchParams(window.location.search).get('tab');
+    if (tab === 'patient') {
+        $('.nav-tabs a[href="#patient"]').tab('show');
+    }
 
-        if (tab === 'patient') {
-            $('.nav-tabs a[href="#patient"]').tab('show');
+    // =========================
+    // FINISH CAMP
+    // =========================
+    $('#finishCamp').click(function () {
+        if (confirm("Finish this camp?")) {
+            window.location.href = "<?= base_url('user/new_screening/finish_camp') ?>";
         }
-
-
-        // =========================
-        // FINISH CAMP
-        // =========================
-        $('#finishCamp').click(function () {
-
-            if (confirm("Finish this camp?")) {
-
-                window.location.href = "<?= base_url('user/new_screening/finish_camp') ?>";
-
-            }
-        });
-
     });
+
+});
 </script>
