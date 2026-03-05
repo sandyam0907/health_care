@@ -390,7 +390,7 @@ $url2 = $this->uri->segment(2);// Controller - instrumentexit;
                     <ul class="navbar-nav mx-auto gov-menu">
                         <li class="nav-item"><a class="nav-link <?php if(isset($url2) && $url2=='dashboard'){?>active<?php }?>" href="<?php print base_url();?>user/dashboard">Analytics</a></li>
                         <li class="nav-item"><a class="nav-link <?php if(isset($url2) && $url2=='new_screening'){?>active<?php }?>" href="<?php print base_url();?>user/new_screening">New Screening</a></li>
-                        <li class="nav-item"><a class="nav-link <?php if(isset($url2) && $url2=='report'){?>active<?php }?>" href="<?php print base_url();?>user/report">Reports</a></li>
+                        <li class="nav-item"><a class="nav-link <?php if(isset($url2) && $url2=='report'){?>active<?php }?>" href="<?php print base_url();?>user/reports">Reports</a></li>
                     </ul>
 
                     <!-- RIGHT ACTIONS -->

@@ -62,9 +62,9 @@ class New_screening extends My_Controller
 
             $project_data = [
                 'project_name' => $this->input->post('name'),
-                'state_name' => $this->input->post('state_name'),
-                'district_name' => $this->input->post('district_name'),
-                'taluk_name' => $this->input->post('taluk_name'),
+                'state_id' => $this->input->post('state_id'),
+                'district_id' => $this->input->post('district_id'),
+                'taluk_id' => $this->input->post('taluk_id'),
                 'pincode' => $this->input->post('pincode'),
                 'work_order_id' => $this->input->post('program_work_order_id'),
                 'camp_date' => $this->input->post('camp_date'),

@@ -75,9 +75,9 @@
 
                         <div class="col-md-3 mb-3">
                             <label>State Name</label>
-                            <select name="state_name" class="form-control select2">
+                            <select name="state_id" class="form-control select2">
                                 <?php foreach ($states as $s): ?>
-                                    <option value="<?= $s->name ?>">
+                                    <option value="<?= $s->id ?>">
                                         <?= $s->name ?>
                                     </option>
                                 <?php endforeach; ?>
@@ -86,9 +86,9 @@
 
                         <div class="col-md-3 mb-3">
                             <label>District Name</label>
-                            <select name="district_name" class="form-control select2">
+                            <select name="district_id" class="form-control select2">
                                 <?php foreach ($districts as $d): ?>
-                                    <option value="<?= $d->district_name ?>">
+                                    <option value="<?= $d->id ?>">
                                         <?= $d->district_name ?>
                                     </option>
                                 <?php endforeach; ?>
@@ -102,9 +102,9 @@
 
                         <div class="col-md-3 mb-3">
                             <label>Taluk Name</label>
-                            <select name="taluk_name" class="form-control select2">
+                            <select name="taluk_id" class="form-control select2">
                                 <?php foreach ($taluks as $t): ?>
-                                    <option value="<?= $t->taluk_name ?>">
+                                    <option value="<?= $t->id ?>">
                                         <?= $t->taluk_name ?>
                                     </option>
                                 <?php endforeach; ?>
