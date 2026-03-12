@@ -23,26 +23,25 @@ class New_screening extends My_Controller
 
     public function index()
     {
-        $data['title'] = 'New Screening';
 
-        // FROM DB
+        // get Locations 
         $data['states'] = $this->location->get_states_dropdown();
         $data['districts'] = $this->location->get_districts_dropdown();
         $data['taluks'] = $this->location->get_taluks_dropdown();
 
+        // Get patients
         $data['patients'] = $this->db->get('patients')->result();
 
+        // Project_is session store
         $project_id = $this->session->userdata('project_id');
 
+        // get project by Id
         $data['project'] = $this->screening_model->get_project_by_id($project_id);
 
-        // echo $this->session->userdata('project_id');
+        //Project Names
+        $data['projects'] = $this->screening_model->get_project_names();
 
-        $data['users'] = [
-            ['id' => 1, 'name' => 'Doctor A'],
-            ['id' => 2, 'name' => 'Nurse B'],
-            ['id' => 3, 'name' => 'Field Staff C'],
-        ];
+        //echo $this->session->userdata('project_id');
 
         $this->load->view('user/includes/_header', $data);
         $this->load->view('user/new_screening', $data);
@@ -53,10 +52,112 @@ class New_screening extends My_Controller
     {
 
         $this->load->library('upload');
+
+        $project_id = $this->session->userdata('project_id');
+
+        // =========================
+        // VALIDATION RULES
+        // =========================
+        if (!$project_id) {
+            $this->form_validation->set_rules('name', 'Project Name', 'required|trim');
+            $this->form_validation->set_rules('camp_date', 'Camp Date', 'required');
+            $this->form_validation->set_rules('state_id', 'State ', 'required');
+            $this->form_validation->set_rules('district_id', 'District', 'required');
+            $this->form_validation->set_rules('taluk_id', 'Taluk', 'required');
+
+        }
+
+
+        //Patient
+        if ($this->input->post('patient_type') == 'new') {
+            $this->form_validation->set_rules('first_name', 'First Name', 'required|trim');
+            $this->form_validation->set_rules('last_name', 'Last Name', 'required|trim');
+            $this->form_validation->set_rules('age', 'Age', 'required|trim');
+            $this->form_validation->set_rules('gender', 'Gender', 'required');
+            $this->form_validation->set_rules('mobile', 'Mobile', 'required|numeric|exact_length[10]');
+            $this->form_validation->set_rules('labour_id', 'Labour ID', 'required|trim');
+            $this->form_validation->set_rules('labour_id_type', 'Labour Type', 'required|trim');
+            $this->form_validation->set_rules('kyc_type', 'kyc Type', 'required|trim');
+            $this->form_validation->set_rules('kyc_no', 'kyc Number ', 'required|trim');
+
+        }
+
+        //General 
+
+        $this->form_validation->set_rules('height', 'Height', 'required|numeric');
+        $this->form_validation->set_rules('weight', 'Weight', 'required|numeric');
+        $this->form_validation->set_rules('bmi', 'BMI', 'required|numeric');
+        $this->form_validation->set_rules('systolic_bp', 'Systolic bp', 'required');
+        $this->form_validation->set_rules('diastolic_bp', 'Diastolic bp', 'required');
+        $this->form_validation->set_rules('pulse', 'Pulse', 'required');
+        $this->form_validation->set_rules('spo2', 'Spo2', 'required');
+        $this->form_validation->set_rules('temperature', 'Temperature', 'required');
+
+        // GP validation
+        $this->form_validation->set_rules('heart_status', 'Heart Status', 'required');
+        $this->form_validation->set_rules('lung_status', 'Lung Status', 'required');
+        $this->form_validation->set_rules('abdomen_status', 'Abdomen Status', 'required');
+
+        // Otology
+        $this->form_validation->set_rules('otology_completed', 'Otology Completed', 'required');
+        $this->form_validation->set_rules('left_ear_500', 'Left Ear 500 Hz', 'required|numeric');
+        $this->form_validation->set_rules('left_ear_1k', 'Left Ear 1 KHz', 'required|numeric');
+        $this->form_validation->set_rules('left_ear_2k', 'Left Ear 2 KHz', 'required|numeric');
+        $this->form_validation->set_rules('left_ear_4k', 'Left Ear 4 KHz', 'required|numeric');
+        $this->form_validation->set_rules('right_ear_500', 'Right Ear 500 Hz', 'required|numeric');
+        $this->form_validation->set_rules('right_ear_1k', 'Right Ear 1 KHz', 'required|numeric');
+        $this->form_validation->set_rules('right_ear_2k', 'Right Ear 2 KHz', 'required|numeric');
+        $this->form_validation->set_rules('right_ear_4k', 'Right Ear 4 KHz', 'required|numeric');
+        $this->form_validation->set_rules('external_eye_exam', 'External Eye Examination', 'required');
+        $this->form_validation->set_rules('va_re', 'Visual Acuity RE', 'required');
+        $this->form_validation->set_rules('va_le', 'Visual Acuity LE', 'required');
+
+        // Lab
+        $this->form_validation->set_rules('hemoglobin', 'Hemoglobin', 'required');
+        $this->form_validation->set_rules('blood_sugar', 'Blood Sugar', 'required');
+        $this->form_validation->set_rules('hba1c', 'hba1c', 'required');
+        $this->form_validation->set_rules('urine_routine', 'Urine Routine', 'required');
+
+        $this->form_validation->set_error_delimiters('<small class="text-danger">', '</small>');
+
+        // =========================
+        // VALIDATION CHECK
+        // =========================
+
+        if ($this->form_validation->run() === FALSE) {
+
+            // remove previous success message
+            $this->session->unset_userdata('success');
+
+            $this->session->set_flashdata(
+                'error',
+                ' Some required fields are missing. Please review all sections and complete the form.'
+            );
+
+            // reload same page with errors
+            $data['states'] = $this->location->get_states_dropdown();
+            $data['districts'] = $this->location->get_districts_dropdown();
+            $data['taluks'] = $this->location->get_taluks_dropdown();
+            $data['patients'] = $this->db->get('patients')->result();
+
+            $project_id = $this->session->userdata('project_id');
+            $data['project'] = $this->screening_model->get_project_by_id($project_id);
+            $data['projects'] = $this->screening_model->get_project_names();
+
+            $data['open_tab'] = $project_id ? 'patient' : 'project';
+
+            $this->load->view('user/includes/_header', $data);
+            $this->load->view('user/new_screening', $data);
+            $this->load->view('user/includes/_footer');
+
+            return;
+        }
+
+
         //  ===========================================================================
         // 1. PROJECT
         //  ===========================================================================
-        $project_id = $this->session->userdata('project_id');
+
 
         if (!$project_id) {
 
@@ -77,6 +178,7 @@ class New_screening extends My_Controller
                 'created_at' => date('Y-m-d H:i:s')
             ];
 
+            $project_data = $this->security->xss_clean($project_data);
             $project_id = $this->screening_model->add_project($project_data);
 
             // store in session
@@ -87,14 +189,16 @@ class New_screening extends My_Controller
         // 2. PATIENT
         //  ===== ======================================================================
         $patient_type = $this->input->post('patient_type');
+
+        $patient_id = null;
+
+
         // FILE UPLOAD - LABOUR
         $labour_file = '';
         if (!empty($_FILES['labour_id_file']['name'])) {
             $config['upload_path'] = './uploads/labour/';
             $config['allowed_types'] = 'jpg|jpeg|png|pdf';
             $config['file_name'] = time() . '_labour';
-
-            $this->load->library('upload');
             $this->upload->initialize($config);
 
             if ($this->upload->do_upload('labour_id_file')) {
@@ -167,6 +271,7 @@ class New_screening extends My_Controller
                 'created_at' => date('Y-m-d H:i:s')
             ];
 
+            $patient_data = $this->security->xss_clean($patient_data);
             $patient_id = $this->screening_model->add_patient($patient_data);
         }
 
@@ -177,11 +282,11 @@ class New_screening extends My_Controller
             'project_id' => $project_id,
             'patient_id' => $patient_id,
             'screening_date' => date('Y-m-d'),
-            'doctor_report' => $this->input->post('doctor_report'),
             'status' => 1,
             'created_at' => date('Y-m-d H:i:s')
         ];
 
+        $screening_data = $this->security->xss_clean($screening_data);
         $screening_id = $this->screening_model->add_screening($screening_data);
 
 
@@ -210,7 +315,8 @@ class New_screening extends My_Controller
             'created_at' => date('Y-m-d H:i:s')
         ];
 
-        $this->screening_model->add_general($general_data);
+        $general_data = $this->security->xss_clean($general_data);
+        $general_id = $this->screening_model->add_general($general_data);
 
         //  ===========================================================================
         // 5. GP
@@ -229,7 +335,8 @@ class New_screening extends My_Controller
             'created_at' => date('Y-m-d H:i:s')
         ];
 
-        $this->screening_model->add_gp($gp_data);
+        $gp_data = $this->security->xss_clean($gp_data);
+        $gp_id = $this->screening_model->add_gp($gp_data);
 
         //  ===========================================================================
         // 6. SPECIAL
@@ -258,7 +365,8 @@ class New_screening extends My_Controller
             'created_at' => date('Y-m-d H:i:s')
         ];
 
-        $this->screening_model->add_special($special_data);
+        $special_data = $this->security->xss_clean($special_data);
+        $special_id = $this->screening_model->add_special($special_data);
 
         //  ===========================================================================
         // 7. LAB
@@ -278,11 +386,38 @@ class New_screening extends My_Controller
             'created_at' => date('Y-m-d H:i:s')
         ];
 
-        $this->screening_model->add_lab($lab_data);
+        $lab_data = $this->security->xss_clean($lab_data);
+        $lab_id = $this->screening_model->add_lab($lab_data);
+
+
+        //  ===========================================================================
+        // Generate Report ID
+        //  ===========================================================================
+
+        $report_id = $this->screening_model->generate_report_id();
+
+        $report_data = [
+            'report_id' => $report_id,
+            'project_id' => $project_id,
+            'patient_id' => $patient_id,
+            'general_check_id' => $general_id,
+            'gp_check_id' => $gp_id,
+            'specialty_check_id' => $special_id,
+            'lab_reports_id' => $lab_id,
+            'status' => 1,
+            'created_date' => date('Y-m-d'),
+            'created_time' => date('H:i:s')
+        ];
+
+        $report_data = $this->security->xss_clean($report_data);
+        $this->screening_model->add_patient_report($report_data);
 
         //  ===========================================================================
         // DONE
         //  ===========================================================================
+
+        // remove previous error message
+        $this->session->unset_userdata('error');
         $this->session->set_flashdata('success', 'Screening saved successfully');
         redirect('user/new_screening?tab=patient');
     }

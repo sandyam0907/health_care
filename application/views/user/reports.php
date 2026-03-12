@@ -1,3 +1,64 @@
+<!-- Datatable style -->
+<link rel="stylesheet" href="<?= base_url() ?>assets/plugins/datatables/dataTables.bootstrap4.css">
+
+<link rel="stylesheet" href="<?= base_url() ?>assets/plugins/datatables/responsive.dataTables.min.css">
+<style>
+    @media (max-width: 768px) {
+
+        .page-title {
+            font-size: 16px;
+        }
+
+        .btn {
+            font-size: 12px;
+        }
+
+        table {
+            font-size: 13px;
+        }
+
+    }
+
+    /* keep your layout css */
+    td .flex {
+        display: flex;
+        justify-content: center;
+        gap: 6px;
+    }
+
+    td .flex .btn {
+        padding: 3px 8px !important;
+        min-width: auto !important;
+    }
+
+    /* icon colors before hover */
+    .view-btn i {
+        color: #007bff;
+    }
+
+    .pdf-btn i {
+        color: #dc3545;
+    }
+
+    .edit-btn i {
+        color: #ffc107;
+    }
+
+    /* icon on hover */
+    .view-btn:hover i,
+    .pdf-btn:hover i,
+    .edit-btn:hover i {
+        color: #fff;
+    }
+
+    .btn {
+        white-space: nowrap;
+    }
+
+    .reset-btn{
+    white-space: nowrap;
+}
+</style>
 <!-- ===== BREADCRUMB BAR ===== -->
 <div class="container-fluid">
     <nav aria-label="breadcrumb" class="mt-2">
@@ -36,7 +97,7 @@
                 <select id="district" class="form-control">
                     <option value="">All Districts</option>
                     <?php foreach ($districts as $d): ?>
-                        <option value="<?= $d->district_name ?>">
+                        <option value="<?= $d->id ?>">
                             <?= $d->district_name ?>
                         </option>
                     <?php endforeach; ?>
@@ -59,36 +120,46 @@
         <div class="row mt-3">
 
             <!-- KEYWORD -->
-            <<div class="col-md-3 col-sm-6 mb-2">
-                <input type="text" id="keyword" class="form-control" placeholder="Search by Patient ID / Mobile">
+            <div class="col-md-3 col-sm-6 mb-2">
+                <input type="text" id="keyword" class="form-control"
+                    placeholder="Search by Patient ID / Camp ID / Mobile">
+            </div>
+
+            <!-- CAMP TYPE -->
+            <div class="col-md-3 col-sm-6 mb-2">
+                <select id="camp_type" class="form-control">
+                    <option value="">Camp Type</option>
+                    <?php foreach ($projects as $p): ?>
+                        <option value="<?= $p->project_name ?>">
+                            <?= $p->project_name ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+
+            <!-- RESET -->
+            <div class="col-md-3 col-sm-12 mb-2">
+                <div class="d-flex flex-column flex-md-row align-items-center">
+
+                    <button class="btn btn-outline-secondary btn-sm mr-md-2 mb-2 mb-md-0 reset-btn">
+                        <i class="fa fa-refresh"></i> Reset
+                    </button>
+
+                    <button class="btn btn-primary btn-sm">
+                        Apply
+                    </button>
+
+                </div>
+            </div>
         </div>
-
-        <!-- CAMP TYPE -->
-        <div class="col-md-3 col-sm-6 mb-2">
-            <select id="camp_type" class="form-control">
-                <option value="">Camp Type</option>
-                <option>General Screening</option>
-                <option>Lab Screening</option>
-                <option>Specialty Camp</option>
-            </select>
-        </div>
-
-        <!-- RESET -->
-        <div class="col-md-3 col-sm-6 mb-2 flex" style="display: flex; gap: 10px;">
-            <button id="resetFilter" class="btn btn-outline-secondary">
-                ♻ Reset Filters
-            </button>
-            <button id="applyFilter"  class="btn btn-primary">
-                Apply
-            </button>
-        </div>
-
-        <!-- ACTIONS -->
-        <div class="col-md-3 col-sm-12 mb-2 text-right">
-
-        </div>
-
     </div>
+</div>
+<!-- ACTIONS -->
+<div class="col-md-3 col-sm-12 mb-2 text-right">
+
+</div>
+
+</div>
 </div>
 
 </div>
@@ -102,86 +173,32 @@
                 <h5 class="page-title">
                     <i class="bi bi-file-earmark-medical"></i> Generated Health Reports
                 </h5>
-                <button class="btn btn-primary btn-sm">
-                    <i class="bi bi-plus-circle"></i> New Screening
-                </button>
+                <a href="<?= base_url('user/new_screening') ?>" class="btn btn-primary btn-sm">
+                    <i class="fa fa-plus-circle"></i> New Screening
+                </a>
             </div>
-
-            <table id="reportsTable" class="table table-bordered table-hover">
-                <thead>
-                    <tr>
-                        <th>Report ID</th>
-                        <th>Patient Name</th>
-                        <th>Age / Gender</th>
-                        <th>District</th>
-                        <th>Camp Date</th>
-                        <th>Status</th>
-                        <th width="160">Action</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
+            <div class="table-responsive">
+                <table id="reportsTable" class="table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th>Report ID</th>
+                            <th>Patient Name</th>
+                            <th>Age / Gender</th>
+                            <th>District</th>
+                            <th>Camp Date</th>
+                            <th>Status</th>
+                            <th width="160">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
 
         </div>
     </div>
 </div>
 
-
-
 <script>
-    $(function () {
-
-        $('#reportsTable').DataTable({
-            data: [
-                {
-                    id: 'UPH-2025-001',
-                    name: 'Rahul Kumar',
-                    age: '34 / Male',
-                    district: 'Lucknow',
-                    date: '25-Dec-2025',
-                    status: 'Completed'
-                },
-                {
-                    id: 'UPH-2025-002',
-                    name: 'Sunita Devi',
-                    age: '29 / Female',
-                    district: 'Kanpur',
-                    date: '25-Dec-2025',
-                    status: 'Completed'
-                },
-                {
-                    id: 'UPH-2025-003',
-                    name: 'Amit Singh',
-                    age: '45 / Male',
-                    district: 'Varanasi',
-                    date: '26-Dec-2025',
-                    status: 'Pending'
-                }
-            ],
-            columns: [
-                { data: 'id' },
-                { data: 'name' },
-                { data: 'age' },
-                { data: 'district' },
-                { data: 'date' },
-                {
-                    data: 'status',
-                    render: s => s === 'Completed'
-                        ? '<span class="badge badge-success badge-status">Completed</span>'
-                        : '<span class="badge badge-warning badge-status">Pending</span>'
-                },
-                {
-                    data: null,
-                    render: () => `
-                    <div class="flex">
-                        <button class="btn btn-sm"><i class="bi bi-eye"></i></button>
-                        <button class="btn btn-sm"><i class="bi bi-file-earmark-pdf"></i></button>
-                        <button class="btn btn-sm"><i class="bi bi-pencil"></i></button>
-                    </div>
-                `
-                }
-            ]
-        });
-
-    });
+    var csrfName = '<?= $this->security->get_csrf_token_name(); ?>';
+    var csrfHash = '<?= $this->security->get_csrf_hash(); ?>';
 </script>

@@ -11,6 +11,10 @@ $url2 = $this->uri->segment(2);// Controller - instrumentexit;
     <!-- Bootstrap 4.6 -->
     <link rel="stylesheet" href="<?= base_url()?>assets/dist/css/bootstrap.min.css">
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
+
+<!-- Font-awesome -->
+<link rel="stylesheet" href="<?= base_url() ?>assets/plugins/font-awesome/css/font-awesome.min.css">
+
     <style>
         :root {
             --primeColor: #1f518a;
@@ -354,6 +358,7 @@ $url2 = $this->uri->segment(2);// Controller - instrumentexit;
             }
         }
     </style>
+
 
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
