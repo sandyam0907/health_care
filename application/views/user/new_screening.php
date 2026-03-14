@@ -65,7 +65,23 @@
         margin-bottom: 6px;
         font-size: 15px;
     }
+
+    .is-invalid,
+    .is-invalid-container {
+        border: 1px solid #dc3545 !important;
+    }
+
+    .select2-container .select2-selection.is-invalid {
+        border: 1px solid #dc3545 !important;
+    }
+
+    .temp-error {
+        color: #dc3545 !important;
+        display: block !important;
+        margin-bottom: 5px;
+    }
 </style>
+
 <!-- ===== BREADCRUMB BAR ===== -->
 <div class="container-fluid">
     <nav aria-label="breadcrumb" class="mt-2">
@@ -86,6 +102,20 @@
     <?php $this->load->view('user/includes/_messages.php'); ?>
     <div class="card shadow-sm ">
         <div class="card-body">
+
+            <!-- Current Camp Info -->
+            <?php if (!empty($project)): ?>
+                <div class="alert alert-info py-2 px-3 mb-3 d-flex justify-content-between align-items-center shadow-sm"
+                    style="border-left: 5px solid #1f518a;">
+                    <div>
+                        <i class="bi bi-info-circle-fill mr-2"></i>
+                        Active Camp: <strong><?= $project->project_name ?></strong>
+                        <span class="mx-2">|</span>
+                        Date: <strong><?= date('d-M-Y', strtotime($project->camp_date)) ?></strong>
+                    </div>
+                    <span class="badge badge-primary">In Progress</span>
+                </div>
+            <?php endif; ?>
 
             <!-- FORM TABS -->
             <ul class="nav nav-tabs flex-nowrap overflow-auto mb-3" id="formTabs">
@@ -150,7 +180,7 @@
                         </div>
 
                         <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
-                            <label>District Name<span class="text-danger">*</span></label>
+                            <label>District Name <span class="text-danger">*</span></label>
                             <select name="district_id" class="form-control select2" required>
                                 <option value="">Select District</option>
                                 <?php foreach ($districts as $d): ?>
@@ -187,7 +217,7 @@
                         </div>
 
                         <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
-                            <label>Date<span class="text-danger">*</span></label>
+                            <label>Date <span class="text-danger">*</span></label>
                             <input type="date" name="camp_date" value="<?= set_value('camp_date'); ?>"
                                 class="form-control" required>
                             <?= form_error('camp_date'); ?>
@@ -246,22 +276,22 @@
                 <div class="tab-pane fade" id="patient">
                     <div class="section-title">Patient Registration</div>
                     <p class="text-muted small">Patient identification details for report traceability.</p>
-
-                    <div class="row mb-4">
-                        <!-- RADIO BUTTONS -->
+                    <div class="row align-items-end mb-4">
                         <div class="col-md-3">
-                            <label class="me-3">
-                                <input type="radio" name="patient_type" value="new"
-                                    <?= set_radio('patient_type', 'new', TRUE); ?>> New Patient
-                            </label>
+                            <label class="d-block mb-2"><strong>Patient Type</strong></label>
 
-                            <label>
-                                <input type="radio" name="patient_type" value="existing"
-                                    <?= set_radio('patient_type', 'existing'); ?>> Existing Patient
-                            </label>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="patient_type" value="new"
+                                    <?= set_radio('patient_type', 'new', TRUE); ?>>
+                                <label class="form-check-label">New Patient</label>
+                            </div>
+
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="patient_type" value="existing"
+                                    <?= set_radio('patient_type', 'existing'); ?>>
+                                <label class="form-check-label">Existing Patient</label>
+                            </div>
                         </div>
-                    </div>
-                    <div class="row mb-2">
                         <div id="existing_patient_box" style="display:none;" class="col-md-3">
                             <label>Select Patient</label>
                             <select id="existing_patient" name="existing_patient_id" class="form-control">
@@ -273,6 +303,7 @@
                                 <?php endforeach; ?>
                             </select>
                         </div>
+
                     </div>
 
                     <!-- GENERAL DETAILS -->
@@ -282,7 +313,7 @@
 
                         <div class="row">
                             <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
-                                <label>First Name<span class="text-danger">*</span></label>
+                                <label>First Name <span class="text-danger">*</span></label>
                                 <input type="text" name="first_name" id="first_name"
                                     value="<?= set_value('first_name'); ?>" class="form-control" required
                                     placeholder="First Name">
@@ -290,7 +321,7 @@
                             </div>
 
                             <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
-                                <label>Last Name<span class="text-danger">*</span></label>
+                                <label>Last Name <span class="text-danger">*</span></label>
                                 <input type="text" name="last_name" id="last_name"
                                     value="<?= set_value('last_name'); ?>" class="form-control " required
                                     placeholder="Full name as per ID">
@@ -305,7 +336,7 @@
                             </div>
 
                             <div class="col-md-2 mb-3">
-                                <label>Gender<span class="text-danger">*</span></label>
+                                <label>Gender <span class="text-danger">*</span></label>
                                 <select name="gender" id="gender" class="form-control" required>
                                     <option value="">Select</option>
                                     <option value="Male" <?= set_select('gender', 'Male'); ?>>Male</option>
@@ -316,7 +347,7 @@
                             </div>
 
                             <div class="col-md-2 mb-3">
-                                <label>Mobile<span class="text-danger">*</span></label>
+                                <label>Mobile <span class="text-danger">*</span></label>
                                 <input type="text" name="mobile" id="mobile" value="<?= set_value('mobile'); ?>"
                                     class="form-control" required placeholder="10-digit mobile" maxlength="10">
                                 <?= form_error('mobile'); ?>
@@ -328,7 +359,7 @@
                         <hr>
                         <div class="row">
                             <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
-                                <label>Labour ID<span class="text-danger">*</span></label>
+                                <label>Labour ID <span class="text-danger">*</span></label>
                                 <input type="text" name="labour_id" id="labour_id"
                                     value="<?= set_value('labour_id'); ?>" class="form-control" placeholder="Labour Id"
                                     required>
@@ -342,7 +373,7 @@
                             </div>
 
                             <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
-                                <label>Labour ID Type<span class="text-danger">*</span></label>
+                                <label>Labour ID Type <span class="text-danger">*</span></label>
                                 <select name="labour_id_type" id="labour_id_type" class="form-control" required>
                                     <option value="">Select</option>
                                     <option value="Labour" <?= set_select('labour_id_type', 'Labour'); ?>>Labour</option>
@@ -359,7 +390,7 @@
 
                         <div class="row">
                             <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
-                                <label>KYC Type<span class="text-danger">*</span></label>
+                                <label>KYC Type <span class="text-danger">*</span></label>
                                 <select name="kyc_type" id="kyc_type" class="form-control" required>
                                     <option value="">Select</option>
                                     <option value="Aadhaar" <?= set_select('kyc_type', 'Aadhaar'); ?>>Aadhaar</option>
@@ -370,7 +401,7 @@
                             </div>
 
                             <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
-                                <label>ID No<span class="text-danger">*</span></label>
+                                <label>ID No <span class="text-danger">*</span></label>
                                 <input type="text" name="kyc_no" id="kyc_no" value="<?= set_value('kyc_no'); ?>"
                                     class="form-control" placeholder="ID No" required>
                                 <?= form_error('kyc_no'); ?>
@@ -412,22 +443,22 @@
                     <p class="text-muted small">Vitals recorded by nursing / paramedical staff.</p>
 
                     <!-- BODY MEASUREMENTS -->
-                    <h6 class="section-title">Body Measurements</h6>
+                    <h6 class="section-title">Body Measurements <span class="badge badge-warning ml-2">Mandatory</span></h6>
                     <div class="row">
                         <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
-                            <label>Height<span class="text-danger">*</span></label>
+                            <label>Height <span class="text-danger">*</span></label>
                             <input type="text" name="height" value="<?= set_value('height'); ?>" class="form-control"
                                 placeholder="in cm" required>
                             <?= form_error('height'); ?>
                         </div>
                         <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
-                            <label>Weight<span class="text-danger">*</span></label>
+                            <label>Weight <span class="text-danger">*</span></label>
                             <input type="text" name="weight" value="<?= set_value('weight'); ?>" class="form-control"
                                 placeholder="in kgs" required>
                             <?= form_error('weight'); ?>
                         </div>
                         <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
-                            <label>BMI<span class="text-danger">*</span></label>
+                            <label>BMI <span class="text-danger">*</span></label>
                             <input type="text" name="bmi" value="<?= set_value('bmi'); ?>" class="form-control"
                                 placeholder="BMI" required>
                             <?= form_error('bmi'); ?>
@@ -471,32 +502,32 @@
                     </div>
 
                     <!-- VITAL SIGNS -->
-                    <h6 class="section-title mt-4">Vital Signs</h6>
+                    <h6 class="section-title mt-4">Vital Signs <span class="badge badge-warning ml-2">Mandatory</span></h6>
 
                     <div class="row">
                         <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
-                            <label>Systolic Blood Pressure (mm Hg)<span class="text-danger">*</span></label>
+                            <label>Systolic Blood Pressure (mm Hg) <span class="text-danger">*</span></label>
                             <input type="text" name="systolic_bp" value="<?= set_value('systolic_bp'); ?>"
                                 class="form-control" placeholder="mm Hg" required>
                             <?= form_error('systolic_bp'); ?>
                         </div>
 
                         <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
-                            <label>Diastolic Blood Pressure (mm Hg)<span class="text-danger">*</span></label>
+                            <label>Diastolic Blood Pressure (mm Hg) <span class="text-danger">*</span></label>
                             <input type="text" name="diastolic_bp" value="<?= set_value('diastolic_bp'); ?>"
                                 class="form-control" placeholder="mm Hg" required>
                             <?= form_error('diastolic_bp'); ?>
                         </div>
 
                         <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
-                            <label>Pulse (bpm)<span class="text-danger">*</span></label>
+                            <label>Pulse (bpm) <span class="text-danger">*</span></label>
                             <input type="text" name="pulse" value="<?= set_value('pulse'); ?>" class="form-control"
                                 placeholder="bpm" required>
                             <?= form_error('pulse'); ?>
                         </div>
 
                         <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
-                            <label>SpO2 (%)<span class="text-danger">*</span></label>
+                            <label>SpO2 (%) <span class="text-danger">*</span></label>
                             <input type="text" name="spo2" value="<?= set_value('spo2'); ?>" class="form-control"
                                 placeholder="SpO2 (%)" required>
                             <?= form_error('spo2'); ?>
@@ -505,7 +536,7 @@
 
                     <div class="row">
                         <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
-                            <label>Temperature (°C)<span class="text-danger">*</span></label>
+                            <label>Temperature (°C) <span class="text-danger">*</span></label>
                             <input type="text" name="temperature" value="<?= set_value('temperature'); ?>"
                                 class="form-control" placeholder="°C" required>
                             <?= form_error('temperature'); ?>
@@ -550,7 +581,7 @@
                     <div class="row">
                         <!-- HEART -->
                         <div class="col-md-4">
-                            <h6 class="sub-section-title">Heart<span class="text-danger">*</span></h6>
+                            <h6 class="sub-section-title">Heart <span class="text-danger">*</span></h6>
 
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="heart_status" value="normal"
@@ -580,7 +611,7 @@
 
                         <!-- LUNG -->
                         <div class="col-md-4">
-                            <h6 class="sub-section-title">Lung<span class="text-danger">*</span></h6>
+                            <h6 class="sub-section-title"> Lung<span class="text-danger">*</span></h6>
 
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="lung_status" value="normal"
@@ -610,7 +641,7 @@
 
                         <!-- ABDOMEN -->
                         <div class="col-md-4">
-                            <h6 class="sub-section-title">Abdomen<span class="text-danger">*</span></h6>
+                            <h6 class="sub-section-title"> Abdomen<span class="text-danger">*</span></h6>
 
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="abdomen_status" value="normal"
@@ -720,7 +751,8 @@
                         </div>
                     </div>
                     <div class="d-flex flex-column flex-md-row justify-content-between gap-2 mt-3">
-                        <button type="button" class="btn btn-outline-secondary prev-tab" data-prev="#gp">Back</button>
+                        <button type="button" class="btn btn-outline-secondary prev-tab"
+                            data-prev="#general">Back</button>
                         <button type="button" class="btn btn-primary next-tab" data-next="#special">Next</button>
                     </div>
                 </div>
@@ -738,7 +770,7 @@
 
                             <!-- OTOLOGY COMPLETED -->
                             <div class="mb-3">
-                                <label class="form-label">Is Otology Completed?<span
+                                <label class="form-label">Is Otology Completed? <span
                                         class="text-danger">*</span></label>
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="otology_completed" value="yes"
@@ -761,7 +793,7 @@
                             </div>
 
                             <!-- HEARING LEVELS -->
-                            <h6 class="sub-section-title mt-4">Hearing Levels</h6>
+                            <h6 class="sub-section-title mt-4">Hearing Levels <span class="badge badge-warning ml-2">Mandatory</span> </h6> 
                             <div class="row">
                                 <!-- LEFT EAR -->
                                 <div class="col-md-6">
@@ -873,7 +905,7 @@
 
                             <!-- EXTERNAL EYE EXAMINATION -->
                             <div class="mb-3">
-                                <label class="form-label">External Eye Examination<span
+                                <label class="form-label">External Eye Examination <span
                                         class="text-danger">*</span></label>
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="external_eye_exam"
@@ -900,7 +932,7 @@
                             <!-- VISUAL ACUITY -->
                             <div class="row">
                                 <div class="col-md-6">
-                                    <label class="form-label">Visual Acuity - RE<span
+                                    <label class="form-label">Visual Acuity - RE <span
                                             class="text-danger">*</span></label>
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="va_re" value="6/6"
@@ -928,7 +960,7 @@
                                 </div>
 
                                 <div class="col-md-6">
-                                    <label class="form-label">Visual Acuity - LE<span
+                                    <label class="form-label">Visual Acuity - LE <span
                                             class="text-danger">*</span></label>
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="va_le" value="6/6"
@@ -959,8 +991,7 @@
                     </div>
 
                     <div class="d-flex flex-column flex-md-row justify-content-between gap-2 mt-3">
-                        <button type="button" class="btn btn-outline-secondary prev-tab"
-                            data-prev="#special">Back</button>
+                        <button type="button" class="btn btn-outline-secondary prev-tab" data-prev="#gp">Back</button>
                         <button type="button" class="btn btn-primary next-tab" data-next="#lab">Next</button>
                     </div>
                 </div>
@@ -976,25 +1007,25 @@
 
                     <div class="row">
                         <div class="col-md-3">
-                            <label>Hemoglobin<span class="text-danger">*</span></label>
+                            <label>Hemoglobin <span class="text-danger">*</span></label>
                             <input name="hemoglobin" id="hemoglobin" value="<?= set_value('hemoglobin'); ?>"
                                 class="form-control" placeholder="g/dL" required>
                             <?= form_error('hemoglobin'); ?>
                         </div>
                         <div class="col-md-3">
-                            <label>Blood Sugar (Random)<span class="text-danger">*</span></label>
+                            <label>Blood Sugar (Random) <span class="text-danger">*</span></label>
                             <input name="blood_sugar" id="blood_sugar" value="<?= set_value('blood_sugar'); ?>"
                                 class="form-control" placeholder="mg/dL" required>
                             <?= form_error('blood_sugar'); ?>
                         </div>
                         <div class="col-md-3">
-                            <label>HbA1c<span class="text-danger">*</span></label>
+                            <label>HbA1c <span class="text-danger">*</span></label>
                             <input name="hba1c" id="hba1c" value="<?= set_value('hba1c'); ?>" class="form-control"
                                 placeholder="%" required>
                             <?= form_error('hba1c'); ?>
                         </div>
                         <div class="col-md-3">
-                            <label>Urine Routine<span class="text-danger">*</span></label>
+                            <label>Urine Routine <span class="text-danger">*</span></label>
                             <select name="urine_routine" class="form-control" required>
                                 <option value="normal" <?= set_select('urine_routine', 'normal'); ?>>Normal</option>
                                 <option value="abnormal" <?= set_select('urine_routine', 'abnormal'); ?>>Abnormal
@@ -1040,7 +1071,8 @@
                         </div>
                     </div>
                     <div class="d-flex flex-column flex-md-row justify-content-between gap-2 mt-3">
-                        <button type="button" class="btn btn-outline-secondary prev-tab" data-prev="#lab">Back</button>
+                        <button type="button" class="btn btn-outline-secondary prev-tab"
+                            data-prev="#special">Back</button>
                         <button type="button" class="btn btn-primary next-tab" data-next="#report">Next</button>
                     </div>
                 </div>
@@ -1116,8 +1148,6 @@
 
         //Project ID
         let projectId = "<?= $this->session->userdata('project_id'); ?>";
-
-        // if project already exists remove required validation
         if (projectId) {
             $('#project').find('[required]').removeAttr('required');
         }
@@ -1137,22 +1167,14 @@
             $('#existing_patient_box').show();
         }
         $('input[name="patient_type"]').change(function () {
-
             let type = $(this).val();
-            console.log("Selected:", type);
-
+            //  console.log("Selected:", type);
             if (type === 'existing') {
-
                 $('#existing_patient_box').show();
-
             } else {
-
                 $('#existing_patient_box').hide();
-
-                // clear + enable
                 $('#patient_section')
                     .find('input, select')
-                    .val('')
                     .prop('disabled', false);
 
                 $('#updateBtn').hide();
@@ -1177,8 +1199,6 @@
                 },
                 dataType: "json",
                 success: function (res) {
-
-                    // fill data
                     $('#first_name').val(res.first_name);
                     $('#last_name').val(res.last_name);
                     $('#age').val(res.age);
@@ -1206,15 +1226,10 @@
             </a>`
                         );
                     }
-                    // disable fields
-                    $('#patient_section input, #patient_section select').prop('disabled', true);
-
-                    // show update button
+                    $('#patient_section input').prop('readonly', true);
+                    $('#patient_section select').prop('disabled', true);
                     $('#updateBtn').show();
-
-                    // reset flag
                     $('#is_patient_updated').val(0);
-
                     csrfHash = $('input[name="<?= $this->security->get_csrf_token_name(); ?>"]').val();
                 }
             });
@@ -1224,29 +1239,83 @@
         // UPDATE BUTTON CLICK
         // =========================
         $('#updateBtn').click(function () {
-
-            // enable fields
-            $('#patient_section input, #patient_section select').prop('disabled', false);
-
-            // mark updated
+            $('#patient_section input').prop('readonly', false);
+            $('#patient_section select').prop('disabled', false);
             $('#is_patient_updated').val(1);
-
             alert("Now you can edit patient details");
         });
 
         // =========================
         // TAB NEXT
         // =========================
+        $('.next-tab').off('click').on('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
 
-        // Update the next-tab logic to ensure it handles the report tab trigger
-        $('.next-tab').click(function () {
             let nextTab = $(this).data('next');
-            if (nextTab) {
-                $('.nav-tabs a[href="' + nextTab + '"]').tab('show');
+            let currentTabPane = $(this).closest('.tab-pane');
+            let isValid = true;
+
+            currentTabPane.find('.temp-error').remove();
+            currentTabPane.find('.is-invalid').removeClass('is-invalid');
+            currentTabPane.find('.is-invalid-container').removeClass('is-invalid-container');
+
+            currentTabPane.find('[required]').each(function () {
+                let field = $(this);
+                let fieldName = field.attr('name');
+                let isMissing = false;
+
+                if (field.is(':radio')) {
+                    if ($(`input[name="${fieldName}"]:checked`).length === 0) {
+                        isMissing = true;
+                        // field.closest('.form-check').parent().addClass('is-invalid-container');
+                    }
+                } else if (field.is('select')) {
+                    if (!field.val() || field.val() === "" || field.val() === null) {
+                        isMissing = true;
+                        field.addClass('is-invalid');
+                        if (field.hasClass('select2-hidden-accessible')) {
+                            field.next('.select2-container').find('.select2-selection').addClass('is-invalid');
+                        }
+                    }
+                } else {
+                    if (!field.val() || field.val().trim() === "") {
+                        isMissing = true;
+                        field.addClass('is-invalid');
+                    }
+                }
+
+                if (isMissing) {
+                    isValid = false;
+                    let parent = field.closest('.mb-3, .col-md-3, .col-md-4, .col-lg-3, .form-group, .row');
+                    let labelText = parent.find('label').first().text().replace('*', '').trim();
+
+                    if (!labelText || labelText.length < 2) {
+                        labelText = field.attr('placeholder') || field.attr('name');
+                    }
+                    let errorHtml = `<div class="text-danger small mt-1 temp-error" style="font-weight:600; display:block;">${labelText} is required.</div>`;
+                    if (field.hasClass('select2-hidden-accessible')) {
+                        field.next('.select2-container').after(errorHtml);
+                    } else if (field.is(':radio')) {
+                        if (field.closest('div').parent().find('.temp-error').length === 0) {
+                            field.closest('div').parent().append(errorHtml);
+                        }
+                    } else {
+                        field.after(errorHtml);
+                    }
+                }
+            });
+            if (isValid) {
+                $(`.nav-tabs a[href="${nextTab}"]`).tab('show');
+                $('html, body').animate({ scrollTop: $(".newscreening").offset().top - 20 }, 200);
+            } else {
+                $('html, body').animate({
+                    scrollTop: currentTabPane.find('.is-invalid, .temp-error, .is-invalid-container').first().offset().top - 150
+                }, 300);
             }
+            return false;
         });
-
-
 
         // =========================
         // GENERATE REPORT & ANALYTICS PREVIEWS 
@@ -1289,7 +1358,6 @@
                         let name = $(this).attr('name');
                         if (!name || $(this).attr('type') === 'hidden' || processedNames.includes(name)) return;
 
-                        // Label Detection Pattern
                         let labelText = "";
                         let parent = $(this).closest('.mb-3, .col-md-3, .col-md-4, .col-md-6, .col-md-12, .col-lg-3, .row, .form-group');
                         let labelObj = $(section.id).find(`label[for="${$(this).attr('id')}"]`);
@@ -1340,13 +1408,13 @@
                     html += `</ul></div></div>`;
                     if (sectionHasData) container.append(html);
                 });
-            } // END REPORT BLOCK
+            }
 
             // --- ANALYTICS TAB LOGIC ---
             if (target === "#analytics") {
                 let checklist = $('#analytics-checklist');
                 let alertBox = $('#analytics-alert');
-                let submitBtn = $('#finalSubmitBtn'); // Ensure your submit button has this ID
+                let submitBtn = $('#finalSubmitBtn');
 
                 checklist.empty();
                 let sectionsFoundWithIssues = 0;
@@ -1368,7 +1436,7 @@
                 sections.forEach(section => {
                     let issues = [];
 
-                    // 1. Scan for client-side required fields that are empty
+                    //  Scan for client-side required fields that are empty
                     $(section.id).find('[required]').each(function () {
                         let name = $(this).attr('name');
                         let val = $(this).val();
@@ -1386,7 +1454,7 @@
                         }
                     });
 
-                    // 2. Scan for server-side errors (text-danger tags)
+                    //  Scan for server-side errors (text-danger tags)
                     $(section.id).find('small.text-danger').each(function () {
                         if ($(this).text().trim().length > 0) {
                             let label = $(this).closest('.mb-3, .row, .col-md-3, .col-md-2, .form-group').find('label').first().text().replace('*', '').trim();
@@ -1428,14 +1496,11 @@
                     submitBtn.prop('disabled', false)
                         .addClass('btn-success').removeClass('btn-secondary');
                 }
-            } // END ANALYTICS BLOCK
+            }
 
             $('#finalSubmitBtn').click(function () {
                 console.log("Submit button clicked");
             });
-
-            // --- CLICK HANDLER FOR "EDIT" SHORTCUTS ---
-            // This must be inside the shown.bs.tab event or delegated to the document
             $('.edit-shortcut').off('click').on('click', function (e) {
                 e.preventDefault();
                 let tabId = $(this).data('target');
@@ -1443,7 +1508,7 @@
                 $('html, body').animate({ scrollTop: $(".newscreening").offset().top }, 200);
             });
 
-        }); // END TAB EVENT
+        });
 
 
         // =========================
@@ -1463,9 +1528,7 @@
         if (tab === 'patient') {
             $('.nav-tabs a[href="#patient"]').tab('show');
         }
-
         var openTab = "<?= isset($open_tab) ? $open_tab : '' ?>";
-
         if (openTab) {
             $('.nav-tabs a[href="#' + openTab + '"]').tab('show');
         }
@@ -1483,34 +1546,42 @@
         // OPEN TAB WITH ERROR
         // =========================
         if ($('.text-danger').length > 0) {
-
             let tabPane = $('.text-danger').first().closest('.tab-pane');
-
             if (tabPane.length) {
-
                 let tabId = tabPane.attr('id');
-
                 $('.nav-tabs a[href="#' + tabId + '"]').tab('show');
 
             }
 
         }
         // =========================
-        // REALTIME VALIDATION UPDATE
+        // REALTIME VALIDATION UPDATE 
         // =========================
-        $('input,select,textarea').on('input change', function () {
-
-            // remove server error message
-            $(this).closest('.mb-3').find('.text-danger').remove();
-
-            // refresh analytics if analytics tab is open
-            if ($('#analytics').hasClass('active')) {
-
-                $('.nav-tabs a[href="#analytics"]').trigger('shown.bs.tab');
-
+        $(document).on('input change', 'input, select, textarea', function () {
+            let field = $(this);
+            let val = field.val();
+            let container = field.closest('.mb-3, .row, .col-md-3, .col-md-2, .form-group');
+            let isFilled = false;
+            if (field.is(':radio')) {
+                if ($(`input[name="${field.attr('name')}"]:checked`).length > 0) isFilled = true;
+            } else if (val && val.trim() !== "") {
+                isFilled = true;
             }
+            if (isFilled) {
+                container.find('.text-danger').fadeOut(200, function () {
+                    $(this).text('');
+                });
+                field.removeClass('is-invalid');
+                if ($('#analytics').hasClass('active')) {
+                    $('.nav-tabs a[href="#analytics"]').trigger('shown.bs.tab');
+                }
+            }
+        });
+        $('#healthForm').submit(function () {
+
+            $('#patient_section input').prop('readonly', false);
+            $('#patient_section select').prop('disabled', false);
 
         });
-
     });
 </script>
