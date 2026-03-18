@@ -1,7 +1,5 @@
 <!-- Datatable style -->
 <link rel="stylesheet" href="<?= base_url() ?>assets/plugins/datatables/dataTables.bootstrap4.css">
-
-<link rel="stylesheet" href="<?= base_url() ?>assets/plugins/datatables/responsive.dataTables.min.css">
 <style>
     @media (max-width: 768px) {
 
@@ -55,9 +53,70 @@
         white-space: nowrap;
     }
 
-    .reset-btn{
-    white-space: nowrap;
-}
+    .reset-btn {
+        white-space: nowrap;
+    }
+
+    .qrbox {
+        width: 60px;
+        height: 60px;
+    }
+
+    /* ===== DATATABLE HEADER ===== */
+    #reportsTable thead th {
+        background: #1f518a;
+        color: #fff;
+        font-weight: 600;
+        text-align: center;
+    }
+
+    /* ===== TABLE ROW HOVER ===== */
+    #reportsTable tbody tr:hover {
+        background: #f2f7ff;
+    }
+
+    /* ===== SEARCH BOX ===== */
+    .dataTables_filter input {
+        border: 1px solid #1f518a;
+        border-radius: 4px;
+        padding: 5px 8px;
+        outline: none;
+    }
+
+    /* ===== SHOW ENTRIES DROPDOWN ===== */
+    .dataTables_length select {
+        border: 1px solid #1f518a;
+        border-radius: 4px;
+        padding: 4px;
+    }
+
+    /* ===== PAGINATION ===== */
+    .dataTables_wrapper .dataTables_paginate .paginate_button {
+        border: 1px solid #1f518a !important;
+        background: #fff !important;
+        color: #1f518a !important;
+        padding: 5px 10px;
+        margin: 2px;
+        border-radius: 4px;
+    }
+
+    /* ACTIVE PAGE */
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+        background: #1f518a !important;
+        color: #fff !important;
+    }
+
+    /* HOVER */
+    .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+        background: #1f518a !important;
+        color: #fff !important;
+    }
+
+    /* ALIGN DATATABLE TOP CONTROLS */
+    .dataTables_wrapper .dataTables_length,
+    .dataTables_wrapper .dataTables_filter {
+        margin-bottom: 10px;
+    }
 </style>
 <!-- ===== BREADCRUMB BAR ===== -->
 <div class="container-fluid">
@@ -188,6 +247,7 @@
                             <th>Camp Date</th>
                             <th>Status</th>
                             <th width="160">Action</th>
+                            <th>QR</th>
                         </tr>
                     </thead>
                     <tbody></tbody>

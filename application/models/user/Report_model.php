@@ -129,18 +129,54 @@ class Report_model extends CI_Model
             $this->db->or_like('projects.id', $keyword);
             $this->db->group_end();
         }
+        // ---------------- SEARCH ----------------
+
+        $search = $this->input->post('search')['value'];
+
+        if (!empty($search)) {
+
+            $this->db->group_start();
+            $this->db->like('patients.first_name', $search);
+            $this->db->or_like('patients.last_name', $search);
+            $this->db->or_like('patient_reports.report_id', $search);
+            $this->db->group_end();
+        }
+
+        // ---------------- ORDER ----------------
+
         $this->db->order_by('patient_reports.id', 'DESC');
 
-        $query = $this->db->get();
+        // ---------------- PAGINATION ----------------
 
-        return $query->result();
+        if ($this->input->post('length') != -1) {
+
+            $this->db->limit(
+                $this->input->post('length'),
+                $this->input->post('start')
+            );
+        }
+
+        return $this->db->get()->result();
 
     }
 
+    public function count_filtered()
+    {
 
-public function get_individual_report($report_id)
-{
-    $this->db->select('
+        $this->db->from('patient_reports');
+
+        $this->db->join('projects', 'projects.id = patient_reports.project_id');
+        $this->db->join('patients', 'patients.id = patient_reports.patient_id');
+
+        return $this->db->count_all_results();
+    }
+
+
+
+
+    public function get_individual_report($report_id)
+    {
+        $this->db->select('
         patient_reports.report_id,
         projects.project_name,
         projects.camp_date,
@@ -163,24 +199,24 @@ public function get_individual_report($report_id)
         lab_reports.*
     ');
 
-    $this->db->from('patient_reports');
+        $this->db->from('patient_reports');
 
-    $this->db->join('projects', 'projects.id = patient_reports.project_id', 'left');
-    $this->db->join('patients', 'patients.id = patient_reports.patient_id', 'left');
+        $this->db->join('projects', 'projects.id = patient_reports.project_id', 'left');
+        $this->db->join('patients', 'patients.id = patient_reports.patient_id', 'left');
 
-    $this->db->join('ci_districts', 'ci_districts.id = projects.district_id');
-    $this->db->join('ci_states', 'ci_states.id = projects.state_id');
-    $this->db->join('ci_taluks', 'ci_taluks.id = projects.taluk_id');
+        $this->db->join('ci_districts', 'ci_districts.id = projects.district_id');
+        $this->db->join('ci_states', 'ci_states.id = projects.state_id');
+        $this->db->join('ci_taluks', 'ci_taluks.id = projects.taluk_id');
 
-    $this->db->join('general_check', 'general_check.id = patient_reports.general_check_id', 'left');
-    $this->db->join('gp_check', 'gp_check.id = patient_reports.gp_check_id', 'left');
-    $this->db->join('specialty_check', 'specialty_check.id = patient_reports.specialty_check_id', 'left');
-    $this->db->join('lab_reports', 'lab_reports.id = patient_reports.lab_reports_id', 'left');
+        $this->db->join('general_check', 'general_check.id = patient_reports.general_check_id', 'left');
+        $this->db->join('gp_check', 'gp_check.id = patient_reports.gp_check_id', 'left');
+        $this->db->join('specialty_check', 'specialty_check.id = patient_reports.specialty_check_id', 'left');
+        $this->db->join('lab_reports', 'lab_reports.id = patient_reports.lab_reports_id', 'left');
 
-    $this->db->where('patient_reports.report_id', $report_id);
+        $this->db->where('patient_reports.report_id', $report_id);
 
-    $query = $this->db->get();
+        $query = $this->db->get();
 
-    return $query->row();
-}
+        return $query->row();
+    }
 }

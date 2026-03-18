@@ -11,7 +11,10 @@
 <!-- DataTables -->
 <script src="<?= base_url() ?>assets/plugins/datatables/jquery.dataTables.js"></script>
 <script src="<?= base_url() ?>assets/plugins/datatables/dataTables.bootstrap4.js"></script>
-<script src="<?= base_url() ?>assets/plugins/datatables/dataTables.responsive.min.js"></script>
+
+
+<!-- For QR code -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
 <script>
     function goToTab(dir) {
@@ -26,20 +29,16 @@
 </script>
 
 <script>
-
     $(document).ready(function () {
 
         var table = $('#reportsTable').DataTable({
 
-            responsive: true,
             processing: true,
             serverSide: true,
-            searching: false,
 
             ajax: {
                 url: "<?= base_url('user/reports/reports_datatable_json') ?>",
                 type: "POST",
-
                 data: function (d) {
 
                     d.from_date = $('#from_date').val();
@@ -49,16 +48,51 @@
                     d.camp_type = $('#camp_type').val();
                     d.keyword = $('#keyword').val();
 
-
-                    d[csrfName] = csrfHash; // CSRF TOKEN
-
+                    d[csrfName] = csrfHash;
                 }
             },
 
-            order: [[0, "desc"]]
+            columnDefs: [
+                {
+                    targets: 7,
+                    render: function (data, type, row) {
+
+                        let reportId = row[0];
+
+                        return `<div id="qr_${reportId}" class="qrbox"></div>`;
+                    }
+                }
+            ],
+
+            order: [[0, "desc"]],
+
+            drawCallback: function (settings) {
+
+                $('#reportsTable tbody tr').each(function () {
+
+                    let reportId = $(this).find('td:eq(0)').text();
+
+                    let qrDiv = document.getElementById("qr_" + reportId);
+
+                    if (qrDiv) {
+
+                        let url = "<?= base_url('user/reports/export_pdf/') ?>" + reportId;
+
+                        console.log("QR URL:", url);
+
+                        new QRCode(qrDiv, {
+                            text: url,
+                            width: 60,
+                            height: 60
+                        });
+
+                    }
+
+                });
+
+            }
 
         });
-
 
         // APPLY FILTER
         $('.btn-primary').click(function () {

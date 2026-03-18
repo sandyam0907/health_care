@@ -415,9 +415,8 @@
                         </div>
                         <div class="d-flex flex-column flex-md-row justify-content-between align-items-stretch mt-3">
 
-                            <button type="button" class="btn btn-outline-secondary mb-2 mb-md-0" data-prev="#project">
-                                Back
-                            </button>
+                            <button type="button" class="btn btn-outline-secondary prev-tab"
+                                data-prev="#project">Back</button>
 
                             <div class="d-flex flex-column flex-md-row">
                                 <button type="button" id="updateBtn" class="btn btn-warning mr-md-2 mb-2 mb-md-0"
@@ -443,7 +442,8 @@
                     <p class="text-muted small">Vitals recorded by nursing / paramedical staff.</p>
 
                     <!-- BODY MEASUREMENTS -->
-                    <h6 class="section-title">Body Measurements <span class="badge badge-warning ml-2">Mandatory</span></h6>
+                    <h6 class="section-title">Body Measurements <span class="badge badge-warning ml-2">Mandatory</span>
+                    </h6>
                     <div class="row">
                         <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
                             <label>Height <span class="text-danger">*</span></label>
@@ -502,7 +502,8 @@
                     </div>
 
                     <!-- VITAL SIGNS -->
-                    <h6 class="section-title mt-4">Vital Signs <span class="badge badge-warning ml-2">Mandatory</span></h6>
+                    <h6 class="section-title mt-4">Vital Signs <span class="badge badge-warning ml-2">Mandatory</span>
+                    </h6>
 
                     <div class="row">
                         <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
@@ -793,7 +794,8 @@
                             </div>
 
                             <!-- HEARING LEVELS -->
-                            <h6 class="sub-section-title mt-4">Hearing Levels <span class="badge badge-warning ml-2">Mandatory</span> </h6> 
+                            <h6 class="sub-section-title mt-4">Hearing Levels <span
+                                    class="badge badge-warning ml-2">Mandatory</span> </h6>
                             <div class="row">
                                 <!-- LEFT EAR -->
                                 <div class="col-md-6">
