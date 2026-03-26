@@ -51,6 +51,8 @@ class New_screening extends My_Controller
     public function add()
     {
 
+
+
         $this->load->library('upload');
 
         $project_id = $this->session->userdata('project_id');
@@ -59,7 +61,7 @@ class New_screening extends My_Controller
         // VALIDATION RULES
         // =========================
         if (!$project_id) {
-            $this->form_validation->set_rules('name', 'Project Name', 'required|trim');
+            $this->form_validation->set_rules('project_master_id', 'Project Name', 'required|trim');
             $this->form_validation->set_rules('camp_date', 'Camp Date', 'required');
             $this->form_validation->set_rules('state_id', 'State ', 'required');
             $this->form_validation->set_rules('district_id', 'District', 'required');
@@ -160,9 +162,36 @@ class New_screening extends My_Controller
 
 
         if (!$project_id) {
+            // 🔥 GET INPUT FROM SELECT2
+            $input = $this->input->post('project_master_id');
+
+            if (is_numeric($input)) {
+                // Existing project selected
+                $project_master_id = $input;
+            } else {
+                // New project typed
+
+                $existing = $this->db
+                    ->where('project_name', $input)
+                    ->get('project_master')
+                    ->row();
+
+                if ($existing) {
+                    $project_master_id = $existing->id;
+                } else {
+                    $this->db->insert('project_master', [
+                        'project_name' => ucfirst($input),
+                        'status' => 1,
+                        'created_at' => date('Y-m-d H:i:s')
+                    ]);
+
+                    $project_master_id = $this->db->insert_id();
+                }
+            }
+
 
             $project_data = [
-                'project_name' => $this->input->post('name'),
+                'project_master_id' => $project_master_id,
                 'state_id' => $this->input->post('state_id'),
                 'district_id' => $this->input->post('district_id'),
                 'taluk_id' => $this->input->post('taluk_id'),
@@ -177,7 +206,6 @@ class New_screening extends My_Controller
                 'status' => 1,
                 'created_at' => date('Y-m-d H:i:s')
             ];
-
             $project_data = $this->security->xss_clean($project_data);
             $project_id = $this->screening_model->add_project($project_data);
 
@@ -408,6 +436,8 @@ class New_screening extends My_Controller
             'created_date' => date('Y-m-d'),
             'created_time' => date('H:i:s')
         ];
+        // print_r($report_data);
+        // exit;
 
         $report_data = $this->security->xss_clean($report_data);
         $this->screening_model->add_patient_report($report_data);

@@ -19,7 +19,7 @@ class Reports extends CI_Controller
         $data['districts'] = $this->location->get_districts_dropdown();
 
         // camp type dropdown
-        $data['projects'] = $this->report_model->get_camp_types();
+        $data['camp_types'] = $this->report_model->get_camp_types();
 
         $this->load->view('user/includes/_header', $data);
         $this->load->view('user/reports', $data);

@@ -7,22 +7,7 @@ class Report_model extends CI_Model
         parent::__construct();
     }
 
-    public function get_camp_types()
-    {
-        $this->db->select('project_name');
-        $this->db->from('projects');
-        $this->db->group_by('project_name');
-
-        $query = $this->db->get();
-
-        return $query->result();
-    }
-
-    public function count_all()
-    {
-        return $this->db->count_all('screenings');
-    }
-
+    // get all reports using screening (bridge)
     public function get_all_reports()
     {
 
@@ -30,6 +15,7 @@ class Report_model extends CI_Model
             screenings.id as report_id,
             projects.camp_date,
             projects.status,
+            project_master.project_name,
             patients.first_name,
             patients.last_name,
             patients.age,
@@ -42,6 +28,8 @@ class Report_model extends CI_Model
         $this->db->join('projects', 'projects.id = screenings.project_id');
         $this->db->join('patients', 'patients.id = screenings.patient_id');
         $this->db->join('ci_districts', 'ci_districts.id = projects.district_id');
+        $this->db->join('project_master', 'project_master.id = projects.project_master_id', 'left');
+
 
         // Filters
         if ($this->input->post('district')) {
@@ -61,7 +49,7 @@ class Report_model extends CI_Model
         }
 
         if ($this->input->post('camp_type')) {
-            $this->db->where('projects.project_name', $this->input->post('camp_type'));
+            $this->db->where('projects.project_master_id', $this->input->post('camp_type'));
         }
         if ($this->input->post('keyword')) {
             $keyword = $this->input->post('keyword');
@@ -78,8 +66,7 @@ class Report_model extends CI_Model
         return $query->result();
     }
 
-
-
+    // get all reports using patient_reports (bridge)
     public function get_reports()
     {
 
@@ -87,6 +74,7 @@ class Report_model extends CI_Model
             patient_reports.report_id,
             projects.camp_date,
             projects.status,
+            project_master.project_name,
             patients.first_name,
             patients.last_name,
             patients.age,
@@ -99,6 +87,7 @@ class Report_model extends CI_Model
         $this->db->join('projects', 'projects.id = patient_reports.project_id');
         $this->db->join('patients', 'patients.id = patient_reports.patient_id');
         $this->db->join('ci_districts', 'ci_districts.id = projects.district_id');
+        $this->db->join('project_master', 'project_master.id = projects.project_master_id', 'left');
 
         // Filters
         if ($this->input->post('district')) {
@@ -118,7 +107,7 @@ class Report_model extends CI_Model
         }
 
         if ($this->input->post('camp_type')) {
-            $this->db->where('projects.project_name', $this->input->post('camp_type'));
+            $this->db->where('projects.project_master_id', $this->input->post('camp_type'));
         }
         if ($this->input->post('keyword')) {
             $keyword = $this->input->post('keyword');
@@ -160,25 +149,12 @@ class Report_model extends CI_Model
 
     }
 
-    public function count_filtered()
-    {
-
-        $this->db->from('patient_reports');
-
-        $this->db->join('projects', 'projects.id = patient_reports.project_id');
-        $this->db->join('patients', 'patients.id = patient_reports.patient_id');
-
-        return $this->db->count_all_results();
-    }
-
-
-
-
+    // get individual patient report
     public function get_individual_report($report_id)
     {
         $this->db->select('
         patient_reports.report_id,
-        projects.project_name,
+        project_master.project_name,
         projects.camp_date,
         projects.location,
         projects.pincode,
@@ -203,6 +179,7 @@ class Report_model extends CI_Model
 
         $this->db->join('projects', 'projects.id = patient_reports.project_id', 'left');
         $this->db->join('patients', 'patients.id = patient_reports.patient_id', 'left');
+        $this->db->join('project_master', 'project_master.id = projects.project_master_id', 'left');
 
         $this->db->join('ci_districts', 'ci_districts.id = projects.district_id');
         $this->db->join('ci_states', 'ci_states.id = projects.state_id');
@@ -219,4 +196,43 @@ class Report_model extends CI_Model
 
         return $query->row();
     }
+
+    public function get_camp_types()
+    {
+        $this->db->select('id, project_name');
+        $this->db->from('project_master');
+        $this->db->group_by('project_name');
+
+        $query = $this->db->get();
+
+        return $query->result();
+    }
+
+    public function count_all()
+    {
+        return $this->db->count_all('screenings');
+    }
+
+    public function count_filtered()
+    {
+
+        $this->db->from('patient_reports');
+
+        $this->db->join('projects', 'projects.id = patient_reports.project_id');
+        $this->db->join('patients', 'patients.id = patient_reports.patient_id');
+
+        return $this->db->count_all_results();
+    }
+
+
+
+
+
+
+
+
+
+
+
+
 }

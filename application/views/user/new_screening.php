@@ -152,15 +152,14 @@
 
                         <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
                             <label>Name <span class="text-danger">*</span> </label>
-                            <select name="name" class="form-control select2-tags" required>
+                            <select name="project_master_id" class="form-control select2-tags" required>
                                 <option value="">Select or type project</option>
 
                                 <?php foreach ($projects as $p): ?>
-                                    <option value="<?= $p->project_name ?>" <?= set_select('name', $p->project_name); ?>>
+                                    <option value="<?= $p->id ?>">
                                         <?= $p->project_name ?>
                                     </option>
                                 <?php endforeach; ?>
-
                             </select>
                             <?= form_error('name'); ?>
                         </div>

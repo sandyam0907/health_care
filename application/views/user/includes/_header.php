@@ -1,28 +1,49 @@
+<?php
+$CI =& get_instance();
+$CI->load->model('admin/Notice_model', 'notice_model');
+$notices = $CI->notice_model->get_active_notices();
+?>
+
 <!DOCTYPE html>
 <html lang="en">
-<?php 
+<?php
 $url2 = $this->uri->segment(2);// Controller - instrumentexit;
 ?>
+
 <head>
     <meta charset="UTF-8">
     <title>UP Govt – Preventive Health Report</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- Bootstrap 4.6 -->
-    <link rel="stylesheet" href="<?= base_url()?>assets/dist/css/bootstrap.min.css">
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="<?= base_url() ?>assets/dist/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
 
-<!-- Font-awesome -->
-<link rel="stylesheet" href="<?= base_url() ?>assets/plugins/font-awesome/css/font-awesome.min.css">
+    <!-- Font-awesome -->
+    <link rel="stylesheet" href="<?= base_url() ?>assets/plugins/font-awesome/css/font-awesome.min.css">
 
     <style>
+        /* ===== global ===== */
         :root {
             --primeColor: #1f518a;
         }
 
+        html,
         body {
+            height: 100%;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
             background: #f4f6f9;
             font-family: "Segoe UI", Roboto, Arial, sans-serif;
+        }
+
+        .main-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
         }
 
         /* ===== TOP GOV HEADER ===== */
@@ -60,11 +81,12 @@ $url2 = $this->uri->segment(2);// Controller - instrumentexit;
         /* ===== CARD & FORM ===== */
         .card {
             border-radius: 8px;
-			
+
         }
-		.newscreening .card{
-			min-height: 65vh;
-		}
+
+        .newscreening .card {
+            min-height: 65vh;
+        }
 
         .nav-tabs .nav-link {
             font-weight: 500;
@@ -75,6 +97,7 @@ $url2 = $this->uri->segment(2);// Controller - instrumentexit;
             background: var(--primeColor);
             color: #fff;
         }
+
 
         .section-title {
             font-weight: 600;
@@ -115,12 +138,6 @@ $url2 = $this->uri->segment(2);// Controller - instrumentexit;
         .tab-content>.active {
             display: block;
             padding: 20px;
-        }
-
-        /* ACTIVE TAB */
-        .nav-tabs .nav-link.active {
-            background: var(--primeColor);
-            color: #fff;
         }
 
         /* RIGHT ANGLE */
@@ -239,9 +256,11 @@ $url2 = $this->uri->segment(2);// Controller - instrumentexit;
 
         .gov-header {
             background: linear-gradient(90deg, #1f518a, #163e68);
+            color: #fff;
             padding: 0;
             z-index: 1030;
         }
+
 
         .gov-title {
             font-weight: 600;
@@ -357,6 +376,47 @@ $url2 = $this->uri->segment(2);// Controller - instrumentexit;
                 min-height: auto;
             }
         }
+
+        #noticeCarousel .carousel-item {
+            height: 35px;
+        }
+
+        .animate-pulse {
+            background-color: var(--primeColor) !important;
+            animation: pulse-blue 2s infinite;
+        }
+
+        @keyframes pulse-blue {
+            0% {
+                box-shadow: 0 0 0 0 rgba(31, 81, 138, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 8px rgba(31, 81, 138, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(31, 81, 138, 0);
+            }
+        }
+
+        /* Vertical centering for carousel content */
+        .carousel-inner .d-flex {
+            height: 100%;
+        }
+
+        #noticeCarousel .fa-chevron-left,
+        #noticeCarousel .fa-chevron-right {
+            font-size: 12px;
+            cursor: pointer;
+            opacity: 0.5;
+        }
+
+        #noticeCarousel .fa-chevron-left:hover,
+        #noticeCarousel .fa-chevron-right:hover {
+            opacity: 1;
+            color: var(--primeColor);
+        }
     </style>
 
 
@@ -393,9 +453,15 @@ $url2 = $this->uri->segment(2);// Controller - instrumentexit;
 
                     <!-- CENTER MENU -->
                     <ul class="navbar-nav mx-auto gov-menu">
-                        <li class="nav-item"><a class="nav-link <?php if(isset($url2) && $url2=='dashboard'){?>active<?php }?>" href="<?php print base_url();?>user/dashboard">Analytics</a></li>
-                        <li class="nav-item"><a class="nav-link <?php if(isset($url2) && $url2=='new_screening'){?>active<?php }?>" href="<?php print base_url();?>user/new_screening">New Screening</a></li>
-                        <li class="nav-item"><a class="nav-link <?php if(isset($url2) && $url2=='report'){?>active<?php }?>" href="<?php print base_url();?>user/reports">Reports</a></li>
+                        <li class="nav-item"><a
+                                class="nav-link <?php if (isset($url2) && $url2 == 'dashboard') { ?>active<?php } ?>"
+                                href="<?php print base_url(); ?>user/dashboard">Analytics</a></li>
+                        <li class="nav-item"><a
+                                class="nav-link <?php if (isset($url2) && $url2 == 'new_screening') { ?>active<?php } ?>"
+                                href="<?php print base_url(); ?>user/new_screening">New Screening</a></li>
+                        <li class="nav-item"><a
+                                class="nav-link <?php if (isset($url2) && $url2 == 'report') { ?>active<?php } ?>"
+                                href="<?php print base_url(); ?>user/reports">Reports</a></li>
                     </ul>
 
                     <!-- RIGHT ACTIONS -->
@@ -417,22 +483,52 @@ $url2 = $this->uri->segment(2);// Controller - instrumentexit;
                         </li>
 
                         <!-- USER DROPDOWN -->
+                        <?php
+                        $username = $this->session->userdata('username');
+                        $role = $this->session->userdata('admin_role');
+
+                        // initials (first 2 letters)
+                        $initials = strtoupper(substr($username, 0, 2));
+                        ?>
+
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle d-flex align-items-center" href="#"
                                 data-toggle="dropdown">
-                                <div class="gov-user-circle mr-2">MO</div>
-                                <span class="d-none d-md-inline">Medical Officer</span>
+
+                                <!-- USER CIRCLE -->
+                                <div class="gov-user-circle mr-2"><?= $initials ?></div>
+
+                                <!-- USER NAME -->
+                                <span class="d-none d-md-inline"><?= $username ?></span>
                             </a>
+
                             <div class="dropdown-menu dropdown-menu-right gov-dropdown">
+
+                                <!-- USER INFO -->
                                 <div class="px-3 py-2 small text-muted">
-                                    District Hospital<br>
-                                    Role: Medical Officer
+                                    Username: <?= $username ?><br>
+                                    Role: <?= $role ?>
                                 </div>
+
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="#">👤 Profile</a>
-                                <a class="dropdown-item" href="#">🔑 Change Password</a>
+
+                                <!-- PROFILE -->
+                                <a class="dropdown-item" href="<?= base_url('user/profile') ?>">
+                                    <i class="fa fa-user text-primary mr-2"></i> Profile
+                                </a>
+
+                                <!-- CHANGE PASSWORD -->
+                                <a class="dropdown-item" href="<?= base_url('user/profile/password') ?>">
+                                    <i class="fa fa-key text-warning mr-2"></i> Change Password
+                                </a>
+
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item text-danger" href="<?php print base_url();?>user/auth/logout">🚪 Logout</a>
+
+                                <!-- LOGOUT -->
+                                <a class="dropdown-item text-danger" href="<?= base_url('user/auth/logout') ?>">
+                                    <i class="fa fa-sign-out mr-2"></i> Logout
+                                </a>
+
                             </div>
                         </li>
 
@@ -444,18 +540,54 @@ $url2 = $this->uri->segment(2);// Controller - instrumentexit;
     </header>
 
     <!-- ===== NOTIFICATION BAR ===== -->
-    <div class="container-fluid px-0">
-        <div class="alert alert-info mb-0 rounded-0 d-flex align-items-center justify-content-between"
-            style="background:#e8f1fb;border-left:5px solid #1f518a;">
-            <div>
-                <strong>📢 Notice:</strong>
-                Monthly health screening data submission deadline is
-                <strong>30 September 2026</strong>.
+    <div class="container-fluid py-2 bg-white border-bottom shadow-sm">
+        <?php if (!empty($notices)): ?>
+            <div id="noticeCarousel" class="carousel slide" data-ride="carousel" data-interval="5000">
+                <div class="carousel-inner">
+                    <?php $i = 0;
+                    foreach ($notices as $n): ?>
+                        <div class="carousel-item <?= ($i == 0) ? 'active' : '' ?>">
+                            <div class="d-flex align-items-center justify-content-between px-md-5">
+
+                                <div class="d-flex align-items-center overflow-hidden">
+                                    <span class="badge badge-primary rounded-pill mr-3 px-3 py-1 animate-pulse">
+                                        <i class="fa fa-bullhorn mr-1"></i> UPDATE
+                                    </span>
+                                    <span class="text-truncate font-weight-bold text-dark" style="max-width: 600px;">
+                                        <?= $n->message ?>
+                                    </span>
+                                    <span class="badge badge-light border ml-3 d-none d-md-inline-block text-muted">
+                                        Ends: <?= date('d M Y', strtotime($n->valid_till)) ?>
+                                    </span>
+                                </div>
+
+                                <div class="d-flex align-items-center">
+                                    <?php if (!empty($n->file)): ?>
+                                        <a href="<?= base_url('uploads/notices/' . $n->file) ?>" target="_blank"
+                                            class="notice-link mr-3">
+                                            View Circular <i class="fa fa-external-link small"></i>
+                                        </a>
+                                    <?php endif; ?>
+
+                                    <?php if (count($notices) > 1): ?>
+                                        <div class="btn-group border-left pl-3">
+                                            <a href="#noticeCarousel" role="button" data-slide="prev" class="text-muted mr-2">
+                                                <i class="fa fa-chevron-left"></i>
+                                            </a>
+                                            <a href="#noticeCarousel" role="button" data-slide="next" class="text-muted">
+                                                <i class="fa fa-chevron-right"></i>
+                                            </a>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+
+                            </div>
+                        </div>
+                        <?php $i++; endforeach; ?>
+                </div>
             </div>
-            <a href="#" class="small font-weight-bold text-primary">
-                View Circular
-            </a>
-        </div>
+        <?php endif; ?>
     </div>
 
- 
+
+    <div class="main-wrapper">

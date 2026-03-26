@@ -1,164 +1,326 @@
+<style>
+    .district-progress {
+        height: 6px;
+        border-radius: 10px;
+        background-color: #f0f2f5;
+    }
 
+    .bg-district {
+        background-color: #1f518a !important;
+    }
 
-    <div class="container-fluid mt-4 mb-5">
-   <!-- ===== BREADCRUMB BAR ===== -->
-    <div class="container-fluid">
-        <nav aria-label="breadcrumb" class="mt-2">
-            <ol class="breadcrumb bg-white shadow-sm mb-0" style="border-left:4px solid #1f518a;">
-                <li class="breadcrumb-item active" aria-current="page">
-                    Analytics
-                </li>
-            </ol>
-        </nav>
-    </div>
-        <!-- ===== FILTER BAR ===== -->
-        <div class="card p-3 mb-4 shadow-sm">
-            <div class="row align-items-end">
+    .text-district {
+        color: #1f518a !important;
+    }
 
-                <!-- DATE RANGE -->
-                <div class="col-md-3 col-sm-6 mb-2">
-                    <label class="small font-weight-bold">Date Range</label>
-                    <input type="date" class="form-control" placeholder="From">
-                </div>
+    .card {
+        border-radius: 14px;
+        border: none;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+    }
 
-                <div class="col-md-3 col-sm-6 mb-2">
-                    <label class="small font-weight-bold">To</label>
-                    <input type="date" class="form-control">
-                </div>
+    .stat-card {
+        transition: 0.3s;
+    }
 
-                <!-- DISTRICT -->
-                <div class="col-md-3 col-sm-6 mb-2">
-                    <label class="small font-weight-bold">District</label>
-                    <select class="form-control">
-                        <option value="">All Districts</option>
-                        <option>Lucknow</option>
-                        <option>Kanpur</option>
-                        <option>Varanasi</option>
-                        <option>Agra</option>
-                        <option>Gorakhpur</option>
-                    </select>
-                </div>
+    .stat-card:hover {
+        transform: translateY(-5px);
+    }
 
-                <!-- CAMP STATUS -->
-                <div class="col-md-3 col-sm-6 mb-2">
-                    <label class="small font-weight-bold">Status</label>
-                    <select class="form-control">
-                        <option value="">All</option>
-                        <option>Completed</option>
-                        <option>Pending</option>
-                        <option>Abnormal</option>
-                    </select>
-                </div>
+    .stat-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: rgba(0, 0, 0, 0.05);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 
-            </div>
+    .stat-icon i {
+        font-size: 16px;
+        color: inherit;
+    }
 
-            <!-- ADVANCED FILTER ROW -->
-            <div class="row mt-3">
+    .card-header {
+        font-size: 14px;
+        font-weight: 600;
+        background: #fff;
+        border-bottom: 1px solid #f1f1f1;
+    }
 
-                <!-- KEYWORD -->
-                <div class="col-md-3 col-sm-6 mb-2">
-                    <input type="text" class="form-control" placeholder="Search by Patient ID / Camp ID / Mobile">
-                </div>
+    canvas {
+        max-height: 250px;
+    }
 
-                <!-- CAMP TYPE -->
-                <div class="col-md-3 col-sm-6 mb-2">
-                    <select class="form-control">
-                        <option value="">Camp Type</option>
-                        <option>General Screening</option>
-                        <option>Lab Screening</option>
-                        <option>Specialty Camp</option>
-                    </select>
-                </div>
+    .chart-row {
+        margin-top: 20px;
+    }
 
-                <!-- RESET -->
-                <div class="col-md-3 col-sm-6 mb-2 flex" style="display: flex; gap: 10px;">
-                    <button class="btn btn-outline-secondary">
-                        ♻ Reset Filters
-                    </button>
-                    <button class="btn btn-primary">
-                        Apply
-                    </button>
-                </div>
+    .chart-card {
+        padding: 5px;
+        transition: 0.2s;
+    }
 
-                <!-- ACTIONS -->
-                <div class="col-md-3 col-sm-12 mb-2 text-right">
+    .chart-card:hover {
+        transform: translateY(-3px);
+    }
 
-                </div>
+    .custom-scroll {
+        scrollbar-width: thin;
+    }
 
-            </div>
-        </div>
+    .custom-scroll::-webkit-scrollbar {
+        width: 6px;
+    }
 
-    </div>
+    .custom-scroll::-webkit-scrollbar-thumb {
+        background: #ccc;
+        border-radius: 10px;
+    }
+</style>
 
+<div class="container-fluid mt-4 mb-5">
 
-    <!-- ===== MAIN CONTENT ===== -->
-    <div class="container-fluid mt-4 mb-5">
+    <!-- ===== BREADCRUMB ===== -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb bg-white shadow-sm mb-0" style="border-left:4px solid #1f518a;">
+            <li class="breadcrumb-item active">
+                <i class="fa fa-bar-chart text-primary mr-1"></i> Analytics Dashboard
+            </li>
+        </ol>
+    </nav>
 
-
-
-        <!-- SUMMARY -->
-        <div class="row mb-4">
-            <div class="col-md-3 col-6 mb-3">
-                <div class="card stat-card text-center p-3">
-                    <h6>Total Screenings</h6>
-                    <h3 class="text-primary">12,450</h3>
-                </div>
-            </div>
-            <div class="col-md-3 col-6 mb-3">
-                <div class="card stat-card text-center p-3">
-                    <h6>Total Camps</h6>
-                    <h3 class="text-success">320</h3>
-                </div>
-            </div>
-            <div class="col-md-3 col-6 mb-3">
-                <div class="card stat-card text-center p-3">
-                    <h6>Abnormal Reports</h6>
-                    <h3 class="text-danger">1,245</h3>
-                </div>
-            </div>
-            <div class="col-md-3 col-6 mb-3">
-                <div class="card stat-card text-center p-3">
-                    <h6>Pending</h6>
-                    <h3 class="text-warning">184</h3>
-                </div>
-            </div>
-        </div>
-
-        <!-- MAP + CHARTS -->
-        <!-- MAP + CHARTS -->
+    <!-- ===== FILTER ===== -->
+    <div class="card p-3 mb-4">
         <div class="row">
 
-            <!-- BIG UP MAP (FULL WIDTH) -->
-            <div class="col-4 mb-4">
-                <div class="card p-3 position-relative map-card">
-                    <h6 class="section-title mb-3">
-                        Uttar Pradesh – District Health Overview
-                        <small class="text-muted">(Hover to view)</small>
-                    </h6>
-
-                    <div id="map" style="width:100%; height:500px"></div>
-
-                </div>
+            <div class="col-md-3 col-sm-6 mb-2">
+                <label class="small fw-bold">Date Range</label>
+                <input type="date" id="from_date" class="form-control">
             </div>
 
-            <!-- SECONDARY CHARTS -->
-            <div class="col-md-4 mb-4">
-                <div class="card p-3 chart-card">
-                    <h6 class="section-title">Report Status Distribution</h6>
-                    <canvas id="statusDonut"></canvas>
-                </div>
+            <div class="col-md-3 col-sm-6 mb-2">
+                <label class="small fw-bold">To</label>
+                <input type="date" id="to_date" class="form-control">
             </div>
 
-            <div class="col-md-4 mb-4">
-                <div class="card p-3 chart-card">
-                    <h6 class="section-title">Top Districts (Screenings)</h6>
-                    <canvas id="districtBar"></canvas>
-                </div>
+            <div class="col-md-3 col-sm-6 mb-2">
+                <label class="small fw-bold">District</label>
+                <select id="district" class="form-control">
+                    <option value="">All</option>
+                    <?php foreach ($districts as $d): ?>
+                        <option value="<?= $d->id ?>"><?= $d->district_name ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+
+            <div class="col-md-3 col-sm-6 mb-2">
+                <label class="small fw-bold">Status</label>
+                <select id="status" class="form-control">
+                    <option value="">All</option>
+                    <option value="1">Completed</option>
+                    <option value="0">Pending</option>
+                </select>
             </div>
 
         </div>
 
+        <div class="row mt-2">
+
+            <div class="col-md-3 col-sm-6 mb-2 ">
+                <select id="camp_type" class="form-control">
+                    <option value="">Camp Type</option>
+                    <?php foreach ($camp_types as $c): ?>
+                        <option value="<?= $c->id ?>"><?= $c->project_name ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+
+            <!-- <div class="col-md-3 col-sm-6 mb-2 d-flex flex-wrap gap-2">
+                <button class="btn btn-outline-secondary btn-sm reset-btn">
+                    <i class="fa fa-refresh"></i> Reset
+                </button>
+                <button class="btn btn-primary btn-sm">Apply</button>
+            </div> -->
+
+             <div class="col-md-3 col-sm-12 mb-2">
+                <div class="d-flex flex-column flex-md-row align-items-center">
+                    <button class="btn btn-outline-secondary btn-sm mr-md-2 mb-2 mb-md-0 reset-btn">
+                        <i class="fa fa-refresh"></i> Reset
+                    </button>
+                    <button class="btn btn-primary btn-sm">Apply</button>
+                </div>
+            </div>
+
+
+        </div>
     </div>
 
+    <!-- ===== SUMMARY ===== -->
+    <div class="row">
 
-   
+        <!-- 1. Screenings -->
+        <div class="col-md-3 col-6 mb-3">
+            <div class="card stat-card p-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <small>Total Screenings</small>
+                        <h4 class="text-primary mb-0"><?= $total_screenings ?></h4>
+                    </div>
+                    <div class="stat-icon text-primary">
+                        <i class="fa fa-file-text"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Camps -->
+        <div class="col-md-3 col-6 mb-3">
+            <div class="card stat-card p-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <small>Total Camps</small>
+                        <h4 class="text-success mb-0"><?= $total_camps ?></h4>
+                    </div>
+                    <div class="stat-icon text-success">
+                        <i class="fa fa-tree"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Patients -->
+        <div class="col-md-3 col-6 mb-3">
+            <div class="card stat-card p-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <small>Total Patients</small>
+                        <h4 class="text-info mb-0"><?= $total_patients ?></h4>
+                    </div>
+                    <div class="stat-icon text-info">
+                        <i class="fa fa-users"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. Today -->
+        <div class="col-md-3 col-6 mb-3">
+            <div class="card stat-card p-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <small>Today</small>
+                        <h4 class="text-warning mb-0"><?= $today ?></h4>
+                    </div>
+                    <div class="stat-icon text-warning">
+                        <i class="fa fa-calendar"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ===== CHARTS ===== -->
+
+    <!-- ROW 1 -->
+    <div class="row chart-row">
+
+        <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
+            <div class="card chart-card h-100">
+                <div class="card-header">Gender Distribution</div>
+                <div class="card-body">
+                    <canvas id="genderChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
+            <div class="card chart-card h-100">
+                <div class="card-header">Age Group</div>
+                <div class="card-body">
+                    <canvas id="ageChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
+            <div class="card chart-card h-100">
+
+                <!-- HEADER -->
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span>District Performance</span>
+                    <select id="districtPerformanceFilter" class="form-control form-control-sm" style="width:150px;">
+                        <option value="">Select</option>
+                        <?php foreach ($districts as $d): ?>
+                            <option value="<?= $d->id ?>"><?= $d->district_name ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
+                <!-- BODY -->
+                <div class="card-body p-3 custom-scroll" style="max-height:350px;" id="districtPerformanceContainer">
+                    <?php
+                    if (!empty($_GET['district'])) {
+                        $data_to_show = $district_wise;
+                    } else {
+                        $data_to_show = array_slice($district_wise, 0, 5);
+                    }
+                    $max_total = !empty($data_to_show) ? max(array_column($data_to_show, 'total')) : 1;
+                    foreach ($data_to_show as $dw):
+                        $percent = ($dw->total / $max_total) * 100;
+                        ?>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="small fw-bold"><?= $dw->district_name ?></span>
+                                <span class="small fw-bold text-district"><?= $dw->total ?></span>
+                            </div>
+                            <div class="progress district-progress">
+                                <div class="progress-bar bg-district" style="width: <?= $percent ?>%"></div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ROW 2 -->
+    <div class="row chart-row">
+
+        <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
+            <div class="card chart-card h-100">
+                <div class="card-header">Report Status</div>
+                <div class="card-body text-center">
+                    <canvas id="statusChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8 col-md-6 col-sm-12 mb-3">
+            <div class="card chart-card h-100">
+                <div class="card-header">Top Districts</div>
+                <div class="card-body">
+                    <canvas id="districtChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ROW 3 -->
+    <div class="row chart-row">
+        <div class="col-12 mb-3">
+            <div class="card chart-card h-100">
+                <div class="card-header">Daily Trend Analysis</div>
+                <div class="card-body">
+                    <canvas id="trendChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

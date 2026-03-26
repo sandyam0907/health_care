@@ -133,7 +133,7 @@
     </nav>
 </div>
 
-<div class="container-fluid mt-4 mb-5">
+<div class="container-fluid mt-4 ">
 
     <!-- ===== FILTER BAR ===== -->
     <div class="card p-3 mb-4 shadow-sm">
@@ -186,13 +186,15 @@
 
             <!-- CAMP TYPE -->
             <div class="col-md-3 col-sm-6 mb-2">
-                <select id="camp_type" class="form-control">
+                <select id="camp_type" name="camp_type" class="form-control">
                     <option value="">Camp Type</option>
-                    <?php foreach ($projects as $p): ?>
-                        <option value="<?= $p->project_name ?>">
-                            <?= $p->project_name ?>
+
+                    <?php foreach ($camp_types as $c): ?>
+                        <option value="<?= $c->id ?>" <?= set_select('camp_type', $c->id) ?>>
+                            <?= $c->project_name ?>
                         </option>
                     <?php endforeach; ?>
+
                 </select>
             </div>
 
@@ -213,10 +215,7 @@
         </div>
     </div>
 </div>
-<!-- ACTIONS -->
-<div class="col-md-3 col-sm-12 mb-2 text-right">
 
-</div>
 
 </div>
 </div>
@@ -224,7 +223,7 @@
 </div>
 
 <!-- ===== MAIN CONTENT ===== -->
-<div class="container-fluid mt-4 mb-4">
+<div class="container-fluid ">
     <div class="card shadow-sm">
         <div class="card-body">
 
