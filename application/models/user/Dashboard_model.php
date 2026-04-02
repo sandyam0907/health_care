@@ -204,5 +204,32 @@ class Dashboard_model extends CI_Model
         return $this->db->get()->result();
     }
 
+    public function get_notification_data($project_id)
+{
+    // Active camp with project name
+    $project = $this->db
+        ->select('projects.*, project_master.project_name')
+        ->from('projects')
+        ->join('project_master', 'project_master.id = projects.project_master_id', 'left')
+        ->where('projects.id', $project_id)
+        ->get()
+        ->row();
+
+    // Last patient
+    $last = $this->db
+        ->select('patients.first_name')
+        ->from('patient_reports')
+        ->join('patients', 'patients.id = patient_reports.patient_id')
+        ->order_by('patient_reports.id', 'DESC')
+        ->limit(1)
+        ->get()
+        ->row();
+
+    return [
+        'project' => $project,
+        'last' => $last
+    ];
+}
+
 }
 ?>

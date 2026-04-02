@@ -49,9 +49,9 @@ class Reports extends CI_Controller
             <i class="fa fa-file-pdf-o"></i>
             </a>
 
-            <button class="btn btn-warning btn-sm">
+            <a href="' . base_url('user/new_screening/edit/' . $row->report_id) . '" class="btn btn-warning btn-sm">
             <i class="fa fa-pencil"></i>
-            </button>
+            </a>
 
             </div>
         ';

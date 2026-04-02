@@ -15,6 +15,7 @@ class New_screening extends My_Controller
         //$this->load->model('user/dashboard_model', 'dashboard_model');
         $this->load->model('admin/Location_Model', 'location');
         $this->load->model('user/New_Screening_model', 'screening_model');
+        $this->load->model('user/Report_model', 'report_model');
 
 
     }
@@ -23,6 +24,10 @@ class New_screening extends My_Controller
 
     public function index()
     {
+        // echo "PHP Date: " . date('Y-m-d H:i:s');
+        // echo "Timezone: " . date_default_timezone_get();
+        // exit;
+        
 
         // get Locations 
         $data['states'] = $this->location->get_states_dropdown();
@@ -51,11 +56,23 @@ class New_screening extends My_Controller
     public function add()
     {
 
-
-
         $this->load->library('upload');
 
-        $project_id = $this->session->userdata('project_id');
+
+        $is_edit = $this->input->post('is_edit');
+        $report_id = $this->input->post('report_id');
+
+        if ($is_edit) {
+            $existing = $this->report_model->get_individual_report($report_id);
+
+            if (!$existing) {
+                show_error("Invalid Report ID");
+            }
+
+            $project_id = $existing->project_id;
+        } else {
+            $project_id = $this->session->userdata('project_id');
+        }
 
         // =========================
         // VALIDATION RULES
@@ -136,6 +153,8 @@ class New_screening extends My_Controller
                 ' Some required fields are missing. Please review all sections and complete the form.'
             );
 
+
+
             // reload same page with errors
             $data['states'] = $this->location->get_states_dropdown();
             $data['districts'] = $this->location->get_districts_dropdown();
@@ -156,13 +175,14 @@ class New_screening extends My_Controller
         }
 
 
+
         //  ===========================================================================
         // 1. PROJECT
         //  ===========================================================================
 
-
-        if (!$project_id) {
-            // 🔥 GET INPUT FROM SELECT2
+        $this->db->trans_start();
+        if (!$project_id && !$is_edit) {
+            // GET INPUT FROM SELECT2
             $input = $this->input->post('project_master_id');
 
             if (is_numeric($input)) {
@@ -171,13 +191,13 @@ class New_screening extends My_Controller
             } else {
                 // New project typed
 
-                $existing = $this->db
+                $project_existing = $this->db
                     ->where('project_name', $input)
                     ->get('project_master')
                     ->row();
 
-                if ($existing) {
-                    $project_master_id = $existing->id;
+                if ($project_existing) {
+                    $project_master_id = $project_existing->id;
                 } else {
                     $this->db->insert('project_master', [
                         'project_name' => ucfirst($input),
@@ -216,10 +236,6 @@ class New_screening extends My_Controller
         //  ===========================================================================
         // 2. PATIENT
         //  ===== ======================================================================
-        $patient_type = $this->input->post('patient_type');
-
-        $patient_id = null;
-
 
         // FILE UPLOAD - LABOUR
         $labour_file = '';
@@ -227,6 +243,7 @@ class New_screening extends My_Controller
             $config['upload_path'] = './uploads/labour/';
             $config['allowed_types'] = 'jpg|jpeg|png|pdf';
             $config['file_name'] = time() . '_labour';
+
             $this->upload->initialize($config);
 
             if ($this->upload->do_upload('labour_id_file')) {
@@ -248,42 +265,19 @@ class New_screening extends My_Controller
             }
         }
 
-        // Existing Patient
-        if ($patient_type == 'existing') {
+        // PATIENT LOGIC 
 
+        $patient_type = $this->input->post('patient_type');
+        $patient_id = null;
+
+        // DETERMINE PATIENT ID
+
+        if ($is_edit) {
+            $patient_id = $existing->patient_id;
+        } elseif ($patient_type === 'existing') {
             $patient_id = $this->input->post('existing_patient_id');
-            $is_updated = $this->input->post('is_patient_updated');
-
-            // ONLY UPDATE IF USER EDITED
-            if ($is_updated == 1) {
-
-                $update_data = [
-                    'first_name' => $this->input->post('first_name'),
-                    'last_name' => $this->input->post('last_name'),
-                    'age' => $this->input->post('age'),
-                    'gender' => $this->input->post('gender'),
-                    'mobile' => $this->input->post('mobile'),
-                    'labour_id' => $this->input->post('labour_id'),
-                    'labour_id_type' => $this->input->post('labour_id_type'),
-                    'kyc_type' => $this->input->post('kyc_type'),
-                    'kyc_no' => $this->input->post('kyc_no'),
-                ];
-
-                if ($labour_file) {
-                    $update_data['labour_id_file'] = $labour_file;
-                }
-
-                if ($kyc_file) {
-                    $update_data['kyc_file'] = $kyc_file;
-                }
-
-                $this->screening_model->edit_patient($patient_id, $update_data);
-            }
-        }
-        // NEW add patient 
-        else {
-
-            // your existing insert code
+        } elseif ($patient_type === 'new') {
+            // insert new
             $patient_data = [
                 'first_name' => $this->input->post('first_name'),
                 'last_name' => $this->input->post('last_name'),
@@ -303,9 +297,45 @@ class New_screening extends My_Controller
             $patient_id = $this->screening_model->add_patient($patient_data);
         }
 
+        // COMMON UPDATE LOGIC 
+
+        $is_updated = $this->input->post('is_patient_updated');
+
+        if ($is_edit || $is_updated == 1) {
+
+            $update_data = [
+                'first_name' => $this->input->post('first_name'),
+                'last_name' => $this->input->post('last_name'),
+                'age' => $this->input->post('age'),
+                'gender' => $this->input->post('gender'),
+                'mobile' => $this->input->post('mobile'),
+                'labour_id' => $this->input->post('labour_id'),
+                'labour_id_type' => $this->input->post('labour_id_type'),
+                'kyc_type' => $this->input->post('kyc_type'),
+                'kyc_no' => $this->input->post('kyc_no'),
+            ];
+
+            if ($labour_file) {
+                $update_data['labour_id_file'] = $labour_file;
+            }
+
+            if ($kyc_file) {
+                $update_data['kyc_file'] = $kyc_file;
+            }
+
+            $update_data = $this->security->xss_clean($update_data);
+
+            $this->screening_model->update_patient($patient_id, $update_data);
+        }
+
+        if (!$patient_id) {
+            show_error("Patient not created / selected");
+        }
+
         // ===========================================================================
         // 3. SCREENING (IMPORTANT)
         // ===========================================================================
+
         $screening_data = [
             'project_id' => $project_id,
             'patient_id' => $patient_id,
@@ -315,141 +345,303 @@ class New_screening extends My_Controller
         ];
 
         $screening_data = $this->security->xss_clean($screening_data);
-        $screening_id = $this->screening_model->add_screening($screening_data);
+        if ($is_edit) {
 
+            if (empty($existing->screening_id)) {
+                show_error('Screening ID missing');
+            }
+
+            $screening_id = $existing->screening_id;
+
+        } else {
+
+            $screening_id = $this->screening_model->add_screening($screening_data);
+
+        }
 
         //  ===========================================================================
         // 4. GENERAL
         // ===========================================================================
-        $general_data = [
-            'screening_id' => $screening_id,
-            'project_id' => $project_id,
-            'patient_id' => $patient_id,
-            'height' => $this->input->post('height'),
-            'weight' => $this->input->post('weight'),
-            'bmi' => $this->input->post('bmi'),
-            'hydration' => $this->input->post('hydration'),
-            'fat' => $this->input->post('fat'),
-            'bonemass' => $this->input->post('bonemass'),
-            'muscle' => $this->input->post('muscle'),
-            'vfat' => $this->input->post('vfat'),
-            'systolic_bp' => $this->input->post('systolic_bp'),
-            'diastolic_bp' => $this->input->post('diastolic_bp'),
-            'pulse' => $this->input->post('pulse'),
-            'spo2' => $this->input->post('spo2'),
-            'temperature' => $this->input->post('temperature'),
-            'metabolic_age' => $this->input->post('metabolic_age'),
-            'basal_metabolic_age' => $this->input->post('basal_metabolic_age'),
-            'created_at' => date('Y-m-d H:i:s')
-        ];
+        if ($is_edit) {
+            $general_data = [
+                'height' => $this->input->post('height'),
+                'weight' => $this->input->post('weight'),
+                'bmi' => $this->input->post('bmi'),
+                'hydration' => $this->input->post('hydration'),
+                'fat' => $this->input->post('fat'),
+                'bonemass' => $this->input->post('bonemass'),
+                'muscle' => $this->input->post('muscle'),
+                'vfat' => $this->input->post('vfat'),
+                'systolic_bp' => $this->input->post('systolic_bp'),
+                'diastolic_bp' => $this->input->post('diastolic_bp'),
+                'pulse' => $this->input->post('pulse'),
+                'spo2' => $this->input->post('spo2'),
+                'temperature' => $this->input->post('temperature'),
+                'metabolic_age' => $this->input->post('metabolic_age'),
+                'basal_metabolic_age' => $this->input->post('basal_metabolic_age'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ];
 
+        } else {
+            $general_data = [
+                'screening_id' => $screening_id,
+                'project_id' => $project_id,
+                'patient_id' => $patient_id,
+                'height' => $this->input->post('height'),
+                'weight' => $this->input->post('weight'),
+                'bmi' => $this->input->post('bmi'),
+                'hydration' => $this->input->post('hydration'),
+                'fat' => $this->input->post('fat'),
+                'bonemass' => $this->input->post('bonemass'),
+                'muscle' => $this->input->post('muscle'),
+                'vfat' => $this->input->post('vfat'),
+                'systolic_bp' => $this->input->post('systolic_bp'),
+                'diastolic_bp' => $this->input->post('diastolic_bp'),
+                'pulse' => $this->input->post('pulse'),
+                'spo2' => $this->input->post('spo2'),
+                'temperature' => $this->input->post('temperature'),
+                'metabolic_age' => $this->input->post('metabolic_age'),
+                'basal_metabolic_age' => $this->input->post('basal_metabolic_age'),
+                'created_at' => date('Y-m-d H:i:s')
+            ];
+
+        }
         $general_data = $this->security->xss_clean($general_data);
-        $general_id = $this->screening_model->add_general($general_data);
+        if ($is_edit) {
+            $this->screening_model->update_general(
+                $existing->general_check_id,
+                $general_data
+            );
+            $general_id = $existing->general_check_id;
+        } else {
+            $general_id = $this->screening_model->add_general($general_data);
+        }
 
         //  ===========================================================================
         // 5. GP
         //  ===========================================================================
-        $gp_data = [
-            'screening_id' => $screening_id,
-            'project_id' => $project_id,
-            'patient_id' => $patient_id,
-            'heart_status' => $this->input->post('heart_status'),
-            'lung_status' => $this->input->post('lung_status'),
-            'abdomen_status' => $this->input->post('abdomen_status'),
-            'fef' => $this->input->post('fef'),
-            'pef' => $this->input->post('pef'),
-            'fev1' => $this->input->post('fev1'),
-            'fev6' => $this->input->post('fev6'),
-            'created_at' => date('Y-m-d H:i:s')
-        ];
+        if ($is_edit) {
+            $gp_data = [
+                'heart_status' => $this->input->post('heart_status'),
+                'lung_status' => $this->input->post('lung_status'),
+                'abdomen_status' => $this->input->post('abdomen_status'),
+                'fef' => $this->input->post('fef'),
+                'pef' => $this->input->post('pef'),
+                'fev1' => $this->input->post('fev1'),
+                'fev6' => $this->input->post('fev6'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ];
 
+        } else {
+            $gp_data = [
+                'screening_id' => $screening_id,
+                'project_id' => $project_id,
+                'patient_id' => $patient_id,
+                'heart_status' => $this->input->post('heart_status'),
+                'lung_status' => $this->input->post('lung_status'),
+                'abdomen_status' => $this->input->post('abdomen_status'),
+                'fef' => $this->input->post('fef'),
+                'pef' => $this->input->post('pef'),
+                'fev1' => $this->input->post('fev1'),
+                'fev6' => $this->input->post('fev6'),
+                'created_at' => date('Y-m-d H:i:s')
+            ];
+
+        }
         $gp_data = $this->security->xss_clean($gp_data);
-        $gp_id = $this->screening_model->add_gp($gp_data);
+        if ($is_edit) {
+            $this->screening_model->update_gp(
+                $existing->gp_check_id,
+                $gp_data
+            );
+            $gp_id = $existing->gp_check_id;
+        } else {
+            $gp_id = $this->screening_model->add_gp($gp_data);
+        }
 
         //  ===========================================================================
         // 6. SPECIAL
         //  ===========================================================================
-        $special_data = [
-            'screening_id' => $screening_id,
-            'project_id' => $project_id,
-            'patient_id' => $patient_id,
-            'otology_completed' => $this->input->post('otology_completed'),
-            'provisional_diagnosis' => $this->input->post('provisional_diagnosis'),
-            'left_ear_500' => $this->input->post('left_ear_500'),
-            'left_ear_1k' => $this->input->post('left_ear_1k'),
-            'left_ear_2k' => $this->input->post('left_ear_2k'),
-            'left_ear_4k' => $this->input->post('left_ear_4k'),
-            'right_ear_500' => $this->input->post('right_ear_500'),
-            'right_ear_1k' => $this->input->post('right_ear_1k'),
-            'right_ear_2k' => $this->input->post('right_ear_2k'),
-            'right_ear_4k' => $this->input->post('right_ear_4k'),
-            'history' => $this->input->post('history'),
-            'symptoms' => $this->input->post('symptoms'),
-            'ocular_findings' => $this->input->post('ocular_findings'),
-            'external_eye_exam' => $this->input->post('external_eye_exam'),
-            'refraction' => $this->input->post('refraction'),
-            'va_re' => $this->input->post('va_re'),
-            'va_le' => $this->input->post('va_le'),
-            'created_at' => date('Y-m-d H:i:s')
-        ];
+
+        if ($is_edit) {
+            $special_data = [
+                'otology_completed' => $this->input->post('otology_completed'),
+                'provisional_diagnosis' => $this->input->post('provisional_diagnosis'),
+                'left_ear_500' => $this->input->post('left_ear_500'),
+                'left_ear_1k' => $this->input->post('left_ear_1k'),
+                'left_ear_2k' => $this->input->post('left_ear_2k'),
+                'left_ear_4k' => $this->input->post('left_ear_4k'),
+                'right_ear_500' => $this->input->post('right_ear_500'),
+                'right_ear_1k' => $this->input->post('right_ear_1k'),
+                'right_ear_2k' => $this->input->post('right_ear_2k'),
+                'right_ear_4k' => $this->input->post('right_ear_4k'),
+                'history' => $this->input->post('history'),
+                'symptoms' => $this->input->post('symptoms'),
+                'ocular_findings' => $this->input->post('ocular_findings'),
+                'external_eye_exam' => $this->input->post('external_eye_exam'),
+                'refraction' => $this->input->post('refraction'),
+                'va_re' => $this->input->post('va_re'),
+                'va_le' => $this->input->post('va_le'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ];
+
+        } else {
+            $special_data = [
+                'screening_id' => $screening_id,
+                'project_id' => $project_id,
+                'patient_id' => $patient_id,
+                'otology_completed' => $this->input->post('otology_completed'),
+                'provisional_diagnosis' => $this->input->post('provisional_diagnosis'),
+                'left_ear_500' => $this->input->post('left_ear_500'),
+                'left_ear_1k' => $this->input->post('left_ear_1k'),
+                'left_ear_2k' => $this->input->post('left_ear_2k'),
+                'left_ear_4k' => $this->input->post('left_ear_4k'),
+                'right_ear_500' => $this->input->post('right_ear_500'),
+                'right_ear_1k' => $this->input->post('right_ear_1k'),
+                'right_ear_2k' => $this->input->post('right_ear_2k'),
+                'right_ear_4k' => $this->input->post('right_ear_4k'),
+                'history' => $this->input->post('history'),
+                'symptoms' => $this->input->post('symptoms'),
+                'ocular_findings' => $this->input->post('ocular_findings'),
+                'external_eye_exam' => $this->input->post('external_eye_exam'),
+                'refraction' => $this->input->post('refraction'),
+                'va_re' => $this->input->post('va_re'),
+                'va_le' => $this->input->post('va_le'),
+                'created_at' => date('Y-m-d H:i:s')
+            ];
+
+        }
 
         $special_data = $this->security->xss_clean($special_data);
-        $special_id = $this->screening_model->add_special($special_data);
+        if ($is_edit) {
+            $this->screening_model->update_special(
+                $existing->specialty_check_id,
+                $special_data
+            );
+            $special_id = $existing->specialty_check_id;
+        } else {
+            $special_id = $this->screening_model->add_special($special_data);
+        }
 
         //  ===========================================================================
         // 7. LAB
         //  ===========================================================================
-        $lab_data = [
-            'screening_id' => $screening_id,
-            'project_id' => $project_id,
-            'patient_id' => $patient_id,
-            'hemoglobin' => $this->input->post('hemoglobin'),
-            'blood_sugar' => $this->input->post('blood_sugar'),
-            'hba1c' => $this->input->post('hba1c'),
-            'urine_routine' => $this->input->post('urine_routine'),
-            'wbc_count' => $this->input->post('wbc_count'),
-            'platelet_count' => $this->input->post('platelet_count'),
-            'ecg' => $this->input->post('ecg'),
-            'chest_x_ray' => $this->input->post('chest_x_ray'),
-            'created_at' => date('Y-m-d H:i:s')
-        ];
+        if ($is_edit) {
+            $lab_data = [
+                'hemoglobin' => $this->input->post('hemoglobin'),
+                'blood_sugar' => $this->input->post('blood_sugar'),
+                'hba1c' => $this->input->post('hba1c'),
+                'urine_routine' => $this->input->post('urine_routine'),
+                'wbc_count' => $this->input->post('wbc_count'),
+                'platelet_count' => $this->input->post('platelet_count'),
+                'ecg' => $this->input->post('ecg'),
+                'chest_x_ray' => $this->input->post('chest_x_ray'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ];
+
+        } else {
+            $lab_data = [
+                'screening_id' => $screening_id,
+                'project_id' => $project_id,
+                'patient_id' => $patient_id,
+                'hemoglobin' => $this->input->post('hemoglobin'),
+                'blood_sugar' => $this->input->post('blood_sugar'),
+                'hba1c' => $this->input->post('hba1c'),
+                'urine_routine' => $this->input->post('urine_routine'),
+                'wbc_count' => $this->input->post('wbc_count'),
+                'platelet_count' => $this->input->post('platelet_count'),
+                'ecg' => $this->input->post('ecg'),
+                'chest_x_ray' => $this->input->post('chest_x_ray'),
+                'created_at' => date('Y-m-d H:i:s')
+            ];
+
+        }
 
         $lab_data = $this->security->xss_clean($lab_data);
-        $lab_id = $this->screening_model->add_lab($lab_data);
+        if ($is_edit) {
+            if ($existing->lab_reports_id) {
+                $this->screening_model->update_lab(
+                    $existing->lab_reports_id,
+                    $lab_data
+                );
+                $lab_id = $existing->lab_reports_id;
+            } else {
+                $lab_id = $this->screening_model->add_lab($lab_data);
+            }
+        } else {
+            $lab_id = $this->screening_model->add_lab($lab_data);
+        }
 
 
         //  ===========================================================================
         // Generate Report ID
         //  ===========================================================================
+        if (!$is_edit) {
+            $report_id = $this->screening_model->generate_report_id();
 
-        $report_id = $this->screening_model->generate_report_id();
+            $report_data = [
+                'report_id' => $report_id,
+                'project_id' => $project_id,
+                'patient_id' => $patient_id,
+                'general_check_id' => $general_id,
+                'gp_check_id' => $gp_id,
+                'specialty_check_id' => $special_id,
+                'lab_reports_id' => $lab_id,
+                'status' => 1,
+                'created_date' => date('Y-m-d'),
+                'created_time' => date('H:i:s')
+            ];
+            // print_r($report_data);
+            // exit;
 
-        $report_data = [
-            'report_id' => $report_id,
-            'project_id' => $project_id,
-            'patient_id' => $patient_id,
-            'general_check_id' => $general_id,
-            'gp_check_id' => $gp_id,
-            'specialty_check_id' => $special_id,
-            'lab_reports_id' => $lab_id,
-            'status' => 1,
-            'created_date' => date('Y-m-d'),
-            'created_time' => date('H:i:s')
-        ];
-        // print_r($report_data);
-        // exit;
-
-        $report_data = $this->security->xss_clean($report_data);
-        $this->screening_model->add_patient_report($report_data);
-
+            $report_data = $this->security->xss_clean($report_data);
+            $this->screening_model->add_patient_report($report_data);
+        }
         //  ===========================================================================
         // DONE
         //  ===========================================================================
 
-        // remove previous error message
+
+        $this->db->trans_complete();
+        if ($this->db->trans_status() === FALSE) {
+            show_error('Something went wrong');
+        }
+
         $this->session->unset_userdata('error');
         $this->session->set_flashdata('success', 'Screening saved successfully');
-        redirect('user/new_screening?tab=patient');
+        if ($is_edit) {
+            redirect('user/reports');
+        } else {
+            redirect('user/new_screening?tab=patient');
+        }
+    }
+
+    public function edit($report_id)
+    {
+        // Get report data
+        $report = $this->report_model->get_individual_report($report_id);
+
+        if (!$report) {
+            show_404();
+        }
+
+        // Load dropdowns & data same as index()
+        $data['report'] = $report;
+        $data['states'] = $this->location->get_states_dropdown();
+        $data['districts'] = $this->location->get_districts_dropdown();
+        $data['taluks'] = $this->location->get_taluks_dropdown();
+        $data['patients'] = $this->db->get('patients')->result();
+
+        // project
+        $data['project'] = $this->screening_model->get_project_by_id($report->project_id);
+        $data['projects'] = $this->screening_model->get_project_names();
+
+        // IMPORTANT → open patient tab first
+        $data['open_tab'] = 'patient';
+
+        $this->load->view('user/includes/_header', $data);
+        $this->load->view('user/new_screening', $data);
+        $this->load->view('user/includes/_footer');
     }
 
     // GET Patient by Id

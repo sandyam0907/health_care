@@ -2,12 +2,13 @@
 
 class New_Screening_model extends CI_Model
 {
+    // --------------------------INSERT----------------------------------------------
     // INSERT project
     public function add_project($data)
     {
         $this->db->insert('projects', $data);
         return $this->db->insert_id();
-        
+
     }
 
     // INSERT patient
@@ -52,6 +53,15 @@ class New_Screening_model extends CI_Model
         return $this->db->insert_id();
     }
 
+      // INSERT patients Report
+    public function add_patient_report($data)
+    {
+        $this->db->insert('patient_reports', $data);
+    }
+
+
+    // --------------------------GET----------------------------------------------
+
     //GET Project By Id
     public function get_project_by_id($id)
     {
@@ -74,14 +84,6 @@ class New_Screening_model extends CI_Model
     public function get_patient_by_id($id)
     {
         return $this->db->get_where('patients', ['id' => $id])->row();
-    }
-
-
-    // UPDATE Patient 
-    public function edit_patient($id, $data)
-    {
-        $this->db->where('id', $id);
-        return $this->db->update('patients', $data);
     }
 
     // Generate report Id
@@ -110,11 +112,32 @@ class New_Screening_model extends CI_Model
         return "UPH-$year-$seq";
     }
 
-    // add patients Report
+// ---------------------------------update-------------------------------------------------
 
-    public function add_patient_report($data)
+    public function update_general($id, $data)
     {
-        $this->db->insert('patient_reports', $data);
+        return $this->db->where('id', $id)->update('general_check', $data);
+    }
+
+    public function update_gp($id, $data)
+    {
+        return $this->db->where('id', $id)->update('gp_check', $data);
+    }
+
+    public function update_special($id, $data)
+    {
+        return $this->db->where('id', $id)->update('specialty_check', $data);
+    }
+
+    public function update_lab($id, $data)
+    {
+        return $this->db->where('id', $id)->update('lab_reports', $data);
+    }
+       // UPDATE Patient 
+    public function update_patient($id, $data)
+    {
+        $this->db->where('id', $id);
+        return $this->db->update('patients', $data);
     }
 
 }

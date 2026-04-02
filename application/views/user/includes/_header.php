@@ -1,8 +1,19 @@
+<!-- Notices and Notification dropdown -->
 <?php
 $CI =& get_instance();
+
 $CI->load->model('admin/Notice_model', 'notice_model');
+$CI->load->model('user/Dashboard_model', 'dashboard_model');
+
+// Notices
 $notices = $CI->notice_model->get_active_notices();
+
+// Notifications
+$project_id = $CI->session->userdata('project_id');
+$notification = $CI->dashboard_model->get_notification_data($project_id);
 ?>
+
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -417,6 +428,16 @@ $url2 = $this->uri->segment(2);// Controller - instrumentexit;
             opacity: 1;
             color: var(--primeColor);
         }
+
+        .notify-dot {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 8px;
+            height: 8px;
+            background: red;
+            border-radius: 50%;
+        }
     </style>
 
 
@@ -466,21 +487,51 @@ $url2 = $this->uri->segment(2);// Controller - instrumentexit;
 
                     <!-- RIGHT ACTIONS -->
                     <ul class="navbar-nav ml-auto align-items-center">
-
                         <!-- NOTIFICATION DROPDOWN -->
-                        <li class="nav-item dropdown mr-3">
-                            <a class="nav-link dropdown-toggle position-relative" href="#" data-toggle="dropdown">
-                                🔔
-                                <span class="notify-dot"></span>
-                            </a>
-                            <div class="dropdown-menu dropdown-menu-right gov-dropdown">
-                                <h6 class="dropdown-header">Notifications</h6>
-                                <a class="dropdown-item small" href="#">🧪 Lab results pending</a>
-                                <a class="dropdown-item small" href="#">📄 Report generated</a>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item text-center small" href="#">View all</a>
-                            </div>
-                        </li>
+     <li class="nav-item dropdown mr-3">
+    <a class="nav-link dropdown-toggle position-relative" href="#" data-toggle="dropdown">
+        <i class="fa fa-bell"></i>
+
+        <?php if (!empty($notification['project']) || !empty($notification['last'])): ?>
+            <span class="notify-dot"></span>
+        <?php endif; ?>
+    </a>
+
+    <div class="dropdown-menu dropdown-menu-right gov-dropdown shadow-sm">
+        <h6 class="dropdown-header">
+            <i class="fa fa-bell mr-1 text-primary"></i> Notifications
+        </h6>
+
+        <!-- ACTIVE CAMP -->
+        <?php if (!empty($notification['project'])): ?>
+            <a class="dropdown-item small d-flex align-items-center" href="#">
+                <i class="fa fa-map-marker-alt text-success mr-2"></i>
+                <span>
+                    Active Camp:
+                    <strong><?= $notification['project']->project_name ?></strong>
+                </span>
+            </a>
+        <?php endif; ?>
+
+        <!-- LAST PATIENT -->
+        <?php if (!empty($notification['last'])): ?>
+            <a class="dropdown-item small d-flex align-items-center" href="#">
+                <i class="fa fa-user text-info mr-2"></i>
+                <span>
+                    Last Patient:
+                    <strong><?= $notification['last']->first_name ?></strong>
+                </span>
+            </a>
+        <?php endif; ?>
+
+        <!-- EMPTY -->
+        <?php if (empty($notification['project']) && empty($notification['last'])): ?>
+            <span class="dropdown-item small text-muted">
+                <i class="fa fa-info-circle mr-1"></i> No notifications
+            </span>
+        <?php endif; ?>
+    </div>
+</li>
 
                         <!-- USER DROPDOWN -->
                         <?php

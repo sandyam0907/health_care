@@ -87,7 +87,7 @@
     <nav aria-label="breadcrumb" class="mt-2">
         <ol class="breadcrumb bg-white shadow-sm mb-0" style="border-left:4px solid #1f518a;">
             <li class="breadcrumb-item">
-                <a href="index.html">Dashboard</a>
+                <a href="<?= base_url('user/dashboard') ?>">Dashboard</a>
             </li>
 
             <li class="breadcrumb-item active" aria-current="page">
@@ -137,8 +137,18 @@
                             class="bi bi-graph-up"></i> Analytics</a></li>
             </ul>
 
+            <?php
+            $is_edit = isset($report) && !empty($report);
+            ?>
+
             <?php echo form_open(base_url('user/new_screening/add'), ['id' => 'healthForm', 'enctype' => 'multipart/form-data']); ?>
+
+            <!-- Hidden Fields -->
+            <input type="hidden" name="is_edit" value="<?= $is_edit ? 1 : 0 ?>">
+            <input type="hidden" name="report_id" value="<?= $is_edit ? $report->report_id : '' ?>">
             <input type="hidden" name="is_patient_updated" id="is_patient_updated" value="0">
+
+
             <div class="tab-content">
 
                 <!-- ---------------------------------------------------------------------------------------------------------- -->
@@ -149,119 +159,121 @@
                     <p class="text-muted small">Enter official details of the health camp as per UP Health IEC
                         guidelines.</p>
                     <div class="row">
+                        <?php if (!$is_edit && empty($project)): ?>
 
-                        <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
-                            <label>Name <span class="text-danger">*</span> </label>
-                            <select name="project_master_id" class="form-control select2-tags" required>
-                                <option value="">Select or type project</option>
+                            <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                                <label>Name <span class="text-danger">*</span> </label>
+                                <select name="project_master_id" class="form-control select2-tags" required>
+                                    <option value="">Select or type project</option>
 
-                                <?php foreach ($projects as $p): ?>
-                                    <option value="<?= $p->id ?>">
-                                        <?= $p->project_name ?>
+                                    <?php foreach ($projects as $p): ?>
+                                        <option value="<?= $p->id ?>">
+                                            <?= $p->project_name ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <?= form_error('name'); ?>
+                            </div>
+
+                            <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                                <label>State Name <span class="text-danger">*</span></label>
+                                <select name="state_id" class="form-control select2" required>
+                                    <option value="">Select State</option>
+                                    <?php foreach ($states as $s): ?>
+                                        <option value="<?= $s->id ?>" <?= set_select('state_id', $s->id); ?>>
+                                            <?= $s->name ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <?= form_error('state_id'); ?>
+
+                            </div>
+
+                            <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                                <label>District Name <span class="text-danger">*</span></label>
+                                <select name="district_id" class="form-control select2" required>
+                                    <option value="">Select District</option>
+                                    <?php foreach ($districts as $d): ?>
+                                        <option value="<?= $d->id ?>" <?= set_select('district_id', $d->id); ?>>
+                                            <?= $d->district_name ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <?= form_error('district_id'); ?>
+                            </div>
+
+                            <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                                <label>Pincode</label>
+                                <input type="text" name="pincode" value="<?= set_value('pincode'); ?>" class="form-control">
+                            </div>
+
+                            <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                                <label>Taluk Name <span class="text-danger">*</span></label>
+                                <select name="taluk_id" class="form-control select2" required>
+                                    <option value="">Select Taluk</option>
+                                    <?php foreach ($taluks as $t): ?>
+                                        <option value="<?= $t->id ?>" <?= set_select('taluk_id', $t->id); ?>>
+                                            <?= $t->taluk_name ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <?= form_error('taluk_id'); ?>
+                            </div>
+
+                            <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                                <label>Program / Work Order ID</label>
+                                <input type="text" name="program_work_order_id"
+                                    value="<?= set_value('program_work_order_id'); ?>" class="form-control">
+                            </div>
+
+                            <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                                <label>Date <span class="text-danger">*</span></label>
+                                <input type="date" name="camp_date" value="<?= set_value('camp_date'); ?>"
+                                    class="form-control" required>
+                                <?= form_error('camp_date'); ?>
+                            </div>
+
+                            <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                                <label>Location</label>
+                                <input type="text" name="location" value="<?= set_value('location'); ?>"
+                                    class="form-control">
+                            </div>
+
+                            <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                                <label>Activity Nature</label>
+                                <select name="activity_nature[]" class="form-control select2" multiple>
+                                    <option value="Generic" <?= set_select('activity_nature[]', 'Generic'); ?>>Generic
                                     </option>
-                                <?php endforeach; ?>
-                            </select>
-                            <?= form_error('name'); ?>
-                        </div>
-
-                        <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
-                            <label>State Name <span class="text-danger">*</span></label>
-                            <select name="state_id" class="form-control select2" required>
-                                <option value="">Select State</option>
-                                <?php foreach ($states as $s): ?>
-                                    <option value="<?= $s->id ?>" <?= set_select('state_id', $s->id); ?>>
-                                        <?= $s->name ?>
+                                    <option value="Health" <?= set_select('activity_nature[]', 'Health'); ?>>Health</option>
+                                    <option value="Awareness" <?= set_select('activity_nature[]', 'Awareness'); ?>>Awareness
                                     </option>
-                                <?php endforeach; ?>
-                            </select>
-                            <?= form_error('state_id'); ?>
+                                </select>
+                            </div>
 
-                        </div>
+                            <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                                <label>Type of Activity</label>
+                                <select name="type_of_activity[]" class="form-control select2" multiple>
+                                    <option value="Pamphlet Distribution" <?= set_select('type_of_activity[]', 'Pamphlet Distribution'); ?>>
+                                        Pamphlet Distribution</option>
+                                    <option value="Street Play" <?= set_select('type_of_activity[]', 'Street Play'); ?>>
+                                        Street Play</option>
+                                    <option value="Poster Campaign" <?= set_select('type_of_activity[]', 'Poster Campaign'); ?>>
+                                        Poster Campaign</option>
+                                </select>
+                            </div>
 
-                        <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
-                            <label>District Name <span class="text-danger">*</span></label>
-                            <select name="district_id" class="form-control select2" required>
-                                <option value="">Select District</option>
-                                <?php foreach ($districts as $d): ?>
-                                    <option value="<?= $d->id ?>" <?= set_select('district_id', $d->id); ?>>
-                                        <?= $d->district_name ?>
+                            <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                                <label>Select Form</label>
+                                <select name="select_form" class="form-control">
+                                    <option value="IEC Activity Log" <?= set_select('select_form', 'IEC Activity Log'); ?>>
+                                        IEC Activity Log
                                     </option>
-                                <?php endforeach; ?>
-                            </select>
-                            <?= form_error('district_id'); ?>
-                        </div>
-
-                        <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
-                            <label>Pincode</label>
-                            <input type="text" name="pincode" value="<?= set_value('pincode'); ?>" class="form-control">
-                        </div>
-
-                        <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
-                            <label>Taluk Name <span class="text-danger">*</span></label>
-                            <select name="taluk_id" class="form-control select2" required>
-                                <option value="">Select Taluk</option>
-                                <?php foreach ($taluks as $t): ?>
-                                    <option value="<?= $t->id ?>" <?= set_select('taluk_id', $t->id); ?>>
-                                        <?= $t->taluk_name ?>
+                                    <option value="Patient Registration" <?= set_select('select_form', 'Patient Registration'); ?>>
+                                        Patient Registration
                                     </option>
-                                <?php endforeach; ?>
-                            </select>
-                            <?= form_error('taluk_id'); ?>
-                        </div>
-
-                        <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
-                            <label>Program / Work Order ID</label>
-                            <input type="text" name="program_work_order_id"
-                                value="<?= set_value('program_work_order_id'); ?>" class="form-control">
-                        </div>
-
-                        <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
-                            <label>Date <span class="text-danger">*</span></label>
-                            <input type="date" name="camp_date" value="<?= set_value('camp_date'); ?>"
-                                class="form-control" required>
-                            <?= form_error('camp_date'); ?>
-                        </div>
-
-                        <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
-                            <label>Location</label>
-                            <input type="text" name="location" value="<?= set_value('location'); ?>"
-                                class="form-control">
-                        </div>
-
-                        <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
-                            <label>Activity Nature</label>
-                            <select name="activity_nature[]" class="form-control select2" multiple>
-                                <option value="Generic" <?= set_select('activity_nature[]', 'Generic'); ?>>Generic
-                                </option>
-                                <option value="Health" <?= set_select('activity_nature[]', 'Health'); ?>>Health</option>
-                                <option value="Awareness" <?= set_select('activity_nature[]', 'Awareness'); ?>>Awareness
-                                </option>
-                            </select>
-                        </div>
-
-                        <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
-                            <label>Type of Activity</label>
-                            <select name="type_of_activity[]" class="form-control select2" multiple>
-                                <option value="Pamphlet Distribution" <?= set_select('type_of_activity[]', 'Pamphlet Distribution'); ?>>
-                                    Pamphlet Distribution</option>
-                                <option value="Street Play" <?= set_select('type_of_activity[]', 'Street Play'); ?>>
-                                    Street Play</option>
-                                <option value="Poster Campaign" <?= set_select('type_of_activity[]', 'Poster Campaign'); ?>>
-                                    Poster Campaign</option>
-                            </select>
-                        </div>
-
-                        <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
-                            <label>Select Form</label>
-                            <select name="select_form" class="form-control">
-                                <option value="IEC Activity Log" <?= set_select('select_form', 'IEC Activity Log'); ?>>
-                                    IEC Activity Log
-                                </option>
-                                <option value="Patient Registration" <?= set_select('select_form', 'Patient Registration'); ?>>
-                                    Patient Registration
-                                </option>
-                            </select>
-                        </div>
+                                </select>
+                            </div>
+                        <?php endif; ?>
 
                     </div>
                     <div class="text-right mt-3">
@@ -281,13 +293,13 @@
 
                             <div class="form-check form-check-inline">
                                 <input class="form-check-input" type="radio" name="patient_type" value="new"
-                                    <?= set_radio('patient_type', 'new', TRUE); ?>>
+                                    <?= ($is_edit && $report->patient_type == 'new') ? 'checked' : set_radio('patient_type', 'new', TRUE); ?>>
                                 <label class="form-check-label">New Patient</label>
                             </div>
 
                             <div class="form-check form-check-inline">
                                 <input class="form-check-input" type="radio" name="patient_type" value="existing"
-                                    <?= set_radio('patient_type', 'existing'); ?>>
+                                    <?= ($is_edit && $report->patient_type == 'existing') ? 'checked' : set_radio('patient_type', 'existing'); ?>>
                                 <label class="form-check-label">Existing Patient</label>
                             </div>
                         </div>
@@ -296,7 +308,7 @@
                             <select id="existing_patient" name="existing_patient_id" class="form-control">
                                 <option value="">-- Select Patient --</option>
                                 <?php foreach ($patients as $p): ?>
-                                    <option value="<?= $p->id ?>" <?= set_select('existing_patient_id', $p->id); ?>>
+                                    <option value="<?= $p->id ?>" <?= ($is_edit && $p->id == $report->patient_id) ? 'selected' : set_select('existing_patient_id', $p->id); ?>>
                                         <?= $p->first_name ?>     <?= $p->last_name ?> - <?= $p->mobile ?>
                                     </option>
                                 <?php endforeach; ?>
@@ -314,23 +326,24 @@
                             <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
                                 <label>First Name <span class="text-danger">*</span></label>
                                 <input type="text" name="first_name" id="first_name"
-                                    value="<?= set_value('first_name'); ?>" class="form-control" required
-                                    placeholder="First Name">
+                                    value="<?= $is_edit ? $report->first_name : set_value('first_name'); ?>"
+                                    class="form-control" required placeholder="First Name">
                                 <?= form_error('first_name'); ?>
                             </div>
 
                             <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
                                 <label>Last Name <span class="text-danger">*</span></label>
                                 <input type="text" name="last_name" id="last_name"
-                                    value="<?= set_value('last_name'); ?>" class="form-control " required
-                                    placeholder="Full name as per ID">
+                                    value="<?= $is_edit ? $report->last_name : set_value('last_name'); ?>"
+                                    class="form-control " required placeholder="Full name as per ID">
                                 <?= form_error('last_name'); ?>
                             </div>
 
                             <div class="col-md-2 mb-3">
                                 <label>Age<span class="text-danger">*</span></label>
-                                <input type="number" name="age" id="age" value="<?= set_value('age'); ?>"
-                                    class="form-control" placeholder="Years" required>
+                                <input type="number" name="age" id="age"
+                                    value="<?= $is_edit ? $report->age : set_value('age'); ?>" class="form-control"
+                                    placeholder="Years" required>
                                 <?= form_error('age'); ?>
                             </div>
 
@@ -338,16 +351,17 @@
                                 <label>Gender <span class="text-danger">*</span></label>
                                 <select name="gender" id="gender" class="form-control" required>
                                     <option value="">Select</option>
-                                    <option value="Male" <?= set_select('gender', 'Male'); ?>>Male</option>
-                                    <option value="Female" <?= set_select('gender', 'Female'); ?>>Female</option>
-                                    <option value="Other" <?= set_select('gender', 'Other'); ?>>Other</option>
+                                    <option value="Male" <?= ($is_edit && $report->gender == 'Male') ? 'selected' : set_select('gender', 'Male'); ?>>Male</option>
+                                    <option value="Female" <?= ($is_edit && $report->gender == 'Female') ? 'selected' : set_select('gender', 'Female'); ?>>Female</option>
+                                    <option value="Other" <?= ($is_edit && $report->gender == 'Other') ? 'selected' : set_select('gender', 'Other'); ?>>Other</option>
                                 </select>
                                 <?= form_error('gender'); ?>
                             </div>
 
                             <div class="col-md-2 mb-3">
                                 <label>Mobile <span class="text-danger">*</span></label>
-                                <input type="text" name="mobile" id="mobile" value="<?= set_value('mobile'); ?>"
+                                <input type="text" name="mobile" id="mobile"
+                                    value="<?= $is_edit ? $report->mobile : set_value('mobile'); ?>"
                                     class="form-control" required placeholder="10-digit mobile" maxlength="10">
                                 <?= form_error('mobile'); ?>
                             </div>
@@ -360,8 +374,8 @@
                             <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
                                 <label>Labour ID <span class="text-danger">*</span></label>
                                 <input type="text" name="labour_id" id="labour_id"
-                                    value="<?= set_value('labour_id'); ?>" class="form-control" placeholder="Labour Id"
-                                    required>
+                                    value="<?= $is_edit ? $report->labour_id : set_value('labour_id'); ?>"
+                                    class="form-control" placeholder="Labour Id" required>
                                 <?= form_error('labour_id'); ?>
                             </div>
 
@@ -375,8 +389,8 @@
                                 <label>Labour ID Type <span class="text-danger">*</span></label>
                                 <select name="labour_id_type" id="labour_id_type" class="form-control" required>
                                     <option value="">Select</option>
-                                    <option value="Labour" <?= set_select('labour_id_type', 'Labour'); ?>>Labour</option>
-                                    <option value="Dependant" <?= set_select('labour_id_type', 'Dependant'); ?>>Dependant
+                                    <option value="Labour" <?= ($is_edit && $report->labour_id_type == 'Labour') ? 'selected' : set_select('labour_id_type', 'Labour'); ?>>Labour</option>
+                                    <option value="Dependant" <?= ($is_edit && $report->labour_id_type == 'Dependant') ? 'selected' : set_select('labour_id_type', 'Dependant'); ?>>Dependant
                                     </option>
                                 </select>
                                 <?= form_error('labour_id_type'); ?>
@@ -392,16 +406,17 @@
                                 <label>KYC Type <span class="text-danger">*</span></label>
                                 <select name="kyc_type" id="kyc_type" class="form-control" required>
                                     <option value="">Select</option>
-                                    <option value="Aadhaar" <?= set_select('kyc_type', 'Aadhaar'); ?>>Aadhaar</option>
-                                    <option value="Voter ID" <?= set_select('kyc_type', 'Voter ID'); ?>>Voter ID</option>
-                                    <option value="PAN" <?= set_select('kyc_type', 'PAN'); ?>>PAN</option>
+                                    <option value="Aadhaar" <?= ($is_edit && $report->kyc_type == 'Aadhaar') ? 'selected' : set_select('kyc_type', 'Aadhaar'); ?>>Aadhaar</option>
+                                    <option value="Voter ID" <?= ($is_edit && $report->kyc_type == 'Voter ID') ? 'selected' : set_select('kyc_type', 'Voter ID'); ?>>Voter ID</option>
+                                    <option value="PAN" <?= ($is_edit && $report->kyc_type == 'PAN') ? 'selected' : set_select('kyc_type', 'PAN'); ?>>PAN</option>
                                 </select>
                                 <?= form_error('kyc_type'); ?>
                             </div>
 
                             <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
                                 <label>ID No <span class="text-danger">*</span></label>
-                                <input type="text" name="kyc_no" id="kyc_no" value="<?= set_value('kyc_no'); ?>"
+                                <input type="text" name="kyc_no" id="kyc_no"
+                                    value="<?= $is_edit ? $report->kyc_no : set_value('kyc_no'); ?>"
                                     class="form-control" placeholder="ID No" required>
                                 <?= form_error('kyc_no'); ?>
                             </div>
@@ -446,20 +461,22 @@
                     <div class="row">
                         <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
                             <label>Height <span class="text-danger">*</span></label>
-                            <input type="text" name="height" value="<?= set_value('height'); ?>" class="form-control"
+                            <input type="text" name="height"
+                                value="<?= $is_edit ? $report->height : set_value('height'); ?>" class="form-control"
                                 placeholder="in cm" required>
                             <?= form_error('height'); ?>
                         </div>
                         <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
                             <label>Weight <span class="text-danger">*</span></label>
-                            <input type="text" name="weight" value="<?= set_value('weight'); ?>" class="form-control"
+                            <input type="text" name="weight"
+                                value="<?= $is_edit ? $report->weight : set_value('weight'); ?>" class="form-control"
                                 placeholder="in kgs" required>
                             <?= form_error('weight'); ?>
                         </div>
                         <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
                             <label>BMI <span class="text-danger">*</span></label>
-                            <input type="text" name="bmi" value="<?= set_value('bmi'); ?>" class="form-control"
-                                placeholder="BMI" required>
+                            <input type="text" name="bmi" value="<?= $is_edit ? $report->bmi : set_value('bmi'); ?>"
+                                class="form-control" placeholder="BMI" required>
                             <?= form_error('bmi'); ?>
                         </div>
                     </div>
@@ -469,25 +486,28 @@
                     <div class="row">
                         <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
                             <label>Hydration (%)</label>
-                            <input type="text" name="hydration" value="<?= set_value('hydration'); ?>"
+                            <input type="text" name="hydration"
+                                value="<?= $is_edit ? $report->hydration : set_value('hydration'); ?>"
                                 class="form-control" placeholder="Hydration (%)">
                         </div>
 
                         <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
                             <label>Fat (%)</label>
-                            <input type="text" name="fat" value="<?= set_value('fat'); ?>" class="form-control"
-                                placeholder="Fat (%)">
+                            <input type="text" name="fat" value="<?= $is_edit ? $report->fat : set_value('fat'); ?>"
+                                class="form-control" placeholder="Fat (%)">
                         </div>
 
                         <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
                             <label>Bonemass (%)</label>
-                            <input type="text" name="bonemass" value="<?= set_value('bonemass'); ?>"
+                            <input type="text" name="bonemass"
+                                value="<?= $is_edit ? $report->bonemass : set_value('bonemass'); ?>"
                                 class="form-control" placeholder="Bonemass (%)">
                         </div>
 
                         <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
                             <label>Muscle (%)</label>
-                            <input type="text" name="muscle" value="<?= set_value('muscle'); ?>" class="form-control"
+                            <input type="text" name="muscle"
+                                value="<?= $is_edit ? $report->muscle : set_value('muscle'); ?>" class="form-control"
                                 placeholder="Muscle (%)">
                         </div>
                     </div>
@@ -495,8 +515,8 @@
                     <div class="row">
                         <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
                             <label>V fat (%)</label>
-                            <input type="text" name="vfat" value="<?= set_value('vfat'); ?>" class="form-control"
-                                placeholder="V fat (%)">
+                            <input type="text" name="vfat" value="<?= $is_edit ? $report->vfat : set_value('vfat'); ?>"
+                                class="form-control" placeholder="V fat (%)">
                         </div>
                     </div>
 
@@ -507,29 +527,32 @@
                     <div class="row">
                         <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
                             <label>Systolic Blood Pressure (mm Hg) <span class="text-danger">*</span></label>
-                            <input type="text" name="systolic_bp" value="<?= set_value('systolic_bp'); ?>"
+                            <input type="text" name="systolic_bp"
+                                value="<?= $is_edit ? $report->systolic_bp : set_value('systolic_bp'); ?>"
                                 class="form-control" placeholder="mm Hg" required>
                             <?= form_error('systolic_bp'); ?>
                         </div>
 
                         <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
                             <label>Diastolic Blood Pressure (mm Hg) <span class="text-danger">*</span></label>
-                            <input type="text" name="diastolic_bp" value="<?= set_value('diastolic_bp'); ?>"
+                            <input type="text" name="diastolic_bp"
+                                value="<?= $is_edit ? $report->diastolic_bp : set_value('diastolic_bp'); ?>"
                                 class="form-control" placeholder="mm Hg" required>
                             <?= form_error('diastolic_bp'); ?>
                         </div>
 
                         <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
                             <label>Pulse (bpm) <span class="text-danger">*</span></label>
-                            <input type="text" name="pulse" value="<?= set_value('pulse'); ?>" class="form-control"
+                            <input type="text" name="pulse"
+                                value="<?= $is_edit ? $report->pulse : set_value('pulse'); ?>" class="form-control"
                                 placeholder="bpm" required>
                             <?= form_error('pulse'); ?>
                         </div>
 
                         <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
                             <label>SpO2 (%) <span class="text-danger">*</span></label>
-                            <input type="text" name="spo2" value="<?= set_value('spo2'); ?>" class="form-control"
-                                placeholder="SpO2 (%)" required>
+                            <input type="text" name="spo2" value="<?= $is_edit ? $report->spo2 : set_value('spo2'); ?>"
+                                class="form-control" placeholder="SpO2 (%)" required>
                             <?= form_error('spo2'); ?>
                         </div>
                     </div>
@@ -537,7 +560,8 @@
                     <div class="row">
                         <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
                             <label>Temperature (°C) <span class="text-danger">*</span></label>
-                            <input type="text" name="temperature" value="<?= set_value('temperature'); ?>"
+                            <input type="text" name="temperature"
+                                value="<?= $is_edit ? $report->temperature : set_value('temperature'); ?>"
                                 class="form-control" placeholder="°C" required>
                             <?= form_error('temperature'); ?>
                         </div>
@@ -549,15 +573,16 @@
                     <div class="row">
                         <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
                             <label>Metabolic Age</label>
-                            <input type="text" name="metabolic_age" value="<?= set_value('metabolic_age'); ?>"
+                            <input type="text" name="metabolic_age"
+                                value="<?= $is_edit ? $report->metabolic_age : set_value('metabolic_age'); ?>"
                                 class="form-control" placeholder="Metabolic Age">
                         </div>
 
                         <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
                             <label>Basal Metabolic Age</label>
                             <input type="text" name="basal_metabolic_age"
-                                value="<?= set_value('basal_metabolic_age'); ?>" class="form-control"
-                                placeholder="Basal Metabolic Age">
+                                value="<?= $is_edit ? $report->basal_metabolic_age : set_value('basal_metabolic_age'); ?>"
+                                class="form-control" placeholder="Basal Metabolic Age">
                         </div>
                     </div>
                     <div class="d-flex flex-column flex-md-row justify-content-between gap-2 mt-3">
@@ -585,25 +610,25 @@
 
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="heart_status" value="normal"
-                                    <?= set_radio('heart_status', 'normal'); ?> required>
+                                    <?= ($is_edit && $report->heart_status == 'normal') ? 'checked' : ''; ?> required>
                                 <label class="form-check-label">Normal – S1 S2 heard</label>
                             </div>
 
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="heart_status" value="murmurs"
-                                    <?= set_radio('heart_status', 'murmurs'); ?>>
+                                    <?= ($is_edit && $report->heart_status == 'murmurs') ? 'checked' : ''; ?>>
                                 <label class="form-check-label">Abnormal – Murmurs</label>
                             </div>
 
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="heart_status" value="rasping"
-                                    <?= set_radio('heart_status', 'rasping'); ?>>
+                                    <?= ($is_edit && $report->heart_status == 'rasping') ? 'checked' : ''; ?>>
                                 <label class="form-check-label">Abnormal – Rasping</label>
                             </div>
 
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="heart_status" value="blowing_sand"
-                                    <?= set_radio('heart_status', 'blowing_sand'); ?>>
+                                    <?= ($is_edit && $report->heart_status == 'blowing_sand') ? 'checked' : ''; ?>>
                                 <label class="form-check-label">Abnormal – Blowing Sound</label>
                             </div>
                             <?= form_error('heart_status'); ?>
@@ -615,25 +640,25 @@
 
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="lung_status" value="normal"
-                                    <?= set_radio('lung_status', 'normal'); ?> required>
+                                    <?= ($is_edit && $report->lung_status == 'normal') ? 'checked' : ''; ?> required>
                                 <label class="form-check-label">Normal – B/L NVBS</label>
                             </div>
 
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="lung_status" value="rhonchi"
-                                    <?= set_radio('lung_status', 'rhonchi'); ?>>
+                                    <?= ($is_edit && $report->lung_status == 'rhonchi') ? 'checked' : ''; ?>>
                                 <label class="form-check-label">Abnormal – Rhonchi low pitched</label>
                             </div>
 
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="lung_status" value="creales"
-                                    <?= set_radio('lung_status', 'creales'); ?>>
+                                    <?= ($is_edit && $report->lung_status == 'creales') ? 'checked' : ''; ?>>
                                 <label class="form-check-label">Abnormal – Creales (high pitched whistling)</label>
                             </div>
 
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="lung_status" value="strides"
-                                    <?= set_radio('lung_status', 'strides'); ?>>
+                                    <?= ($is_edit && $report->lung_status == 'strides') ? 'checked' : ''; ?>>
                                 <label class="form-check-label">Abnormal – Strides (breath vibrator sound)</label>
                             </div>
                             <?= form_error('lung_status'); ?>
@@ -645,61 +670,61 @@
 
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="abdomen_status" value="normal"
-                                    <?= set_radio('abdomen_status', 'normal'); ?> required>
+                                    <?= ($is_edit && $report->abdomen_status == 'normal') ? 'checked' : ''; ?> required>
                                 <label class="form-check-label">Normal – P/A soft BS non tender</label>
                             </div>
 
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="abdomen_status" value="splenomegaly"
-                                    <?= set_radio('abdomen_status', 'splenomegaly'); ?>>
+                                    <?= ($is_edit && $report->abdomen_status == 'splenomegaly') ? 'checked' : ''; ?>>
                                 <label class="form-check-label">Abnormal – Splenomegaly</label>
                             </div>
 
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="abdomen_status" value="hepatomegaly"
-                                    <?= set_radio('abdomen_status', 'hepatomegaly'); ?>>
+                                    <?= ($is_edit && $report->abdomen_status == 'hepatomegaly') ? 'checked' : ''; ?>>
                                 <label class="form-check-label">Abnormal – Hepatomegaly</label>
                             </div>
 
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="abdomen_status"
-                                    value="urinary_retention" <?= set_radio('abdomen_status', 'urinary_retention'); ?>>
+                                    value="urinary_retention" <?= ($is_edit && $report->abdomen_status == 'urinary_retention') ? 'checked' : ''; ?>>
                                 <label class="form-check-label">Abnormal – Urinary Retention</label>
                             </div>
 
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="abdomen_status" value="distention"
-                                    <?= set_radio('abdomen_status', 'distention'); ?>>
+                                    <?= ($is_edit && $report->abdomen_status == 'distention') ? 'checked' : ''; ?>>
                                 <label class="form-check-label">Abnormal – Distention</label>
                             </div>
 
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="abdomen_status"
-                                    value="decreased_bowel" <?= set_radio('abdomen_status', 'decreased_bowel'); ?>>
+                                    value="decreased_bowel" <?= ($is_edit && $report->abdomen_status == 'decreased_bowel') ? 'checked' : ''; ?>>
                                 <label class="form-check-label">Abnormal – Decreased Bowel Sounds</label>
                             </div>
 
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="abdomen_status"
-                                    value="abdominal_mass" <?= set_radio('abdomen_status', 'abdominal_mass'); ?>>
+                                    value="abdominal_mass" <?= ($is_edit && $report->abdomen_status == 'abdominal_mass') ? 'checked' : ''; ?>>
                                 <label class="form-check-label">Abnormal – Abdominal Mass</label>
                             </div>
 
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="abdomen_status"
-                                    value="umbilical_hernia" <?= set_radio('abdomen_status', 'umbilical_hernia'); ?>>
+                                    value="umbilical_hernia" <?= ($is_edit && $report->abdomen_status == 'umbilical_hernia') ? 'checked' : ''; ?>>
                                 <label class="form-check-label">Abnormal – Umbilical Hernia</label>
                             </div>
 
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="abdomen_status"
-                                    value="inguinal_hernia" <?= set_radio('abdomen_status', 'inguinal_hernia'); ?>>
+                                    value="inguinal_hernia" <?= ($is_edit && $report->abdomen_status == 'inguinal_hernia') ? 'checked' : ''; ?>>
                                 <label class="form-check-label">Abnormal – Inguinal Hernia</label>
                             </div>
 
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="abdomen_status" value="rigidity"
-                                    <?= set_radio('abdomen_status', 'rigidity'); ?>>
+                                    <?= ($is_edit && $report->abdomen_status == 'rigidity') ? 'checked' : ''; ?>>
                                 <label class="form-check-label">Abnormal – Rigidity</label>
                             </div>
                             <?= form_error('abdomen_status'); ?>
@@ -716,8 +741,8 @@
                             <label>FEF</label>
                         </div>
                         <div class="col-md-4">
-                            <input type="text" name="fef" value="<?= set_value('fef'); ?>" class="form-control"
-                                placeholder="FEF value">
+                            <input type="text" name="fef" value="<?= $is_edit ? $report->fef : set_value('fef'); ?>"
+                                class="form-control" placeholder="FEF value">
                         </div>
                     </div>
 
@@ -726,8 +751,8 @@
                             <label>PEF</label>
                         </div>
                         <div class="col-md-4">
-                            <input type="text" name="pef" value="<?= set_value('pef'); ?>" class="form-control"
-                                placeholder="PEF value">
+                            <input type="text" name="pef" value="<?= $is_edit ? $report->pef : set_value('pef'); ?>"
+                                class="form-control" placeholder="PEF value">
                         </div>
                     </div>
 
@@ -736,8 +761,8 @@
                             <label>FEV1</label>
                         </div>
                         <div class="col-md-4">
-                            <input type="text" name="fev1" value="<?= set_value('fev1'); ?>" class="form-control"
-                                placeholder="FEV1 value">
+                            <input type="text" name="fev1" value="<?= $is_edit ? $report->fev1 : set_value('fev1'); ?>"
+                                class="form-control" placeholder="FEV1 value">
                         </div>
                     </div>
 
@@ -746,8 +771,8 @@
                             <label>FEV6</label>
                         </div>
                         <div class="col-md-4">
-                            <input type="text" name="fev6" value="<?= set_value('fev6'); ?>" class="form-control"
-                                placeholder="FEV6 value">
+                            <input type="text" name="fev6" value="<?= $is_edit ? $report->fev6 : set_value('fev6'); ?>"
+                                class="form-control" placeholder="FEV6 value">
                         </div>
                     </div>
                     <div class="d-flex flex-column flex-md-row justify-content-between gap-2 mt-3">
@@ -768,18 +793,22 @@
                             <h6 class="section-title">Audiometry Screening</h6>
                             <hr>
 
+                            <?= ($is_edit)
+                                ? ($report->field == 'value' ? 'selected' : '')
+                                : set_select('field', 'value'); ?>
+
                             <!-- OTOLOGY COMPLETED -->
                             <div class="mb-3">
                                 <label class="form-label">Is Otology Completed? <span
                                         class="text-danger">*</span></label>
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="otology_completed" value="yes"
-                                        <?= set_radio('otology_completed', 'yes'); ?> required>
+                                        <?= ($is_edit && $report->otology_completed == 'yes') ? 'checked' : set_radio('otology_completed', 'yes'); ?> required>
                                     <label class="form-check-label">Yes</label>
                                 </div>
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="otology_completed" value="no"
-                                        <?= set_radio('otology_completed', 'no'); ?>>
+                                        <?= ($is_edit && $report->otology_completed == 'no') ? 'checked' : set_radio('otology_completed', 'no'); ?>>
                                     <label class="form-check-label">No</label>
                                 </div>
                                 <?= form_error('otology_completed'); ?>
@@ -789,7 +818,7 @@
                             <div class="mb-3">
                                 <label class="form-label">Provisional Diagnosis</label>
                                 <textarea name="provisional_diagnosis" class="form-control" rows="2"
-                                    placeholder="Provisional Diagnosis"><?= set_value('provisional_diagnosis'); ?></textarea>
+                                    placeholder="Provisional Diagnosis"><?= $is_edit ? $report->provisional_diagnosis : set_value('provisional_diagnosis'); ?></textarea>
                             </div>
 
                             <!-- HEARING LEVELS -->
@@ -803,29 +832,29 @@
                                         <div class="col-md-12 mb-3">
                                             <label>Left Freq 500 Hz <span class="text-danger">*</span></label>
                                             <input type="text" name="left_ear_500"
-                                                value="<?= set_value('left_ear_500'); ?>" class="form-control" required
-                                                placeholder="0 to 120 db">
+                                                value="<?= $is_edit ? $report->left_ear_500 : set_value('left_ear_500'); ?>"
+                                                class="form-control" required placeholder="0 to 120 db">
                                             <?= form_error('left_ear_500'); ?>
                                         </div>
                                         <div class="col-md-12 mb-3">
                                             <label>Left Freq 1 KHz <span class="text-danger">*</span></label>
                                             <input type="text" name="left_ear_1k"
-                                                value="<?= set_value('left_ear_1k'); ?>" class="form-control" required
-                                                placeholder="0 to 120 db">
+                                                value="<?= $is_edit ? $report->left_ear_1k : set_value('left_ear_1k'); ?>"
+                                                class="form-control" required placeholder="0 to 120 db">
                                             <?= form_error('left_ear_1k'); ?>
                                         </div>
                                         <div class="col-md-12 mb-3">
                                             <label>Left Freq 2 KHz <span class="text-danger">*</span></label>
                                             <input type="text" name="left_ear_2k"
-                                                value="<?= set_value('left_ear_2k'); ?>" class="form-control" required
-                                                placeholder="0 to 120 db">
+                                                value="<?= $is_edit ? $report->left_ear_2k : set_value('left_ear_2k'); ?>"
+                                                class="form-control" required placeholder="0 to 120 db">
                                             <?= form_error('left_ear_2k'); ?>
                                         </div>
                                         <div class="col-md-12 mb-3">
                                             <label>Left Freq 4 KHz <span class="text-danger">*</span></label>
                                             <input type="text" name="left_ear_4k"
-                                                value="<?= set_value('left_ear_4k'); ?>" class="form-control" required
-                                                placeholder="0 to 120 db">
+                                                value="<?= $is_edit ? $report->left_ear_4k : set_value('left_ear_4k'); ?>"
+                                                class="form-control" required placeholder="0 to 120 db">
                                             <?= form_error('left_ear_4k'); ?>
                                         </div>
                                     </div>
@@ -838,29 +867,29 @@
                                         <div class="col-md-12 mb-3">
                                             <label>Right Freq 500 Hz <span class="text-danger">*</span></label>
                                             <input type="text" name="right_ear_500"
-                                                value="<?= set_value('right_ear_500'); ?>" class="form-control" required
-                                                placeholder="0 to 120 db">
+                                                value="<?= $is_edit ? $report->right_ear_500 : set_value('right_ear_500'); ?>"
+                                                class="form-control" required placeholder="0 to 120 db">
                                             <?= form_error('right_ear_500'); ?>
                                         </div>
                                         <div class="col-md-12 mb-3">
                                             <label>Right Freq 1 KHz <span class="text-danger">*</span></label>
                                             <input type="text" name="right_ear_1k"
-                                                value="<?= set_value('right_ear_1k'); ?>" class="form-control" required
-                                                placeholder="0 to 120 db">
+                                                value="<?= $is_edit ? $report->right_ear_1k : set_value('right_ear_1k'); ?>"
+                                                class="form-control" required placeholder="0 to 120 db">
                                             <?= form_error('right_ear_1k'); ?>
                                         </div>
                                         <div class="col-md-12 mb-3">
                                             <label>Right Freq 2 KHz <span class="text-danger">*</span></label>
                                             <input type="text" name="right_ear_2k"
-                                                value="<?= set_value('right_ear_2k'); ?>" class="form-control" required
-                                                placeholder="0 to 120 db">
+                                                value="<?= $is_edit ? $report->right_ear_2k : set_value('right_ear_2k'); ?>"
+                                                class="form-control" required placeholder="0 to 120 db">
                                             <?= form_error('right_ear_2k'); ?>
                                         </div>
                                         <div class="col-md-12 mb-3">
                                             <label>Right Freq 4 KHz <span class="text-danger">*</span></label>
                                             <input type="text" name="right_ear_4k"
-                                                value="<?= set_value('right_ear_4k'); ?>" class="form-control" required
-                                                placeholder="0 to 120 db">
+                                                value="<?= $is_edit ? $report->right_ear_4k : set_value('right_ear_4k'); ?>"
+                                                class="form-control" required placeholder="0 to 120 db">
                                             <?= form_error('right_ear_4k'); ?>
                                         </div>
                                     </div>
@@ -875,18 +904,19 @@
                             <div class="mb-3">
                                 <label class="form-label">History</label>
                                 <textarea name="history" class="form-control"
-                                    rows="2"><?= set_value('history'); ?></textarea>
+                                    rows="2"><?= $is_edit ? $report->history : set_value('history'); ?></textarea>
                             </div>
 
                             <!-- SYMPTOMS -->
                             <div class="mb-3">
                                 <label class="form-label">Symptoms</label>
                                 <select name="symptoms" class="form-control">
-                                    <option value="NA">NA</option>
-                                    <option value="blurred_vision" <?= set_select('symptoms', 'blurred_vision'); ?>>
+                                    <option value="NA" <?= ($is_edit && $report->symptoms == 'NA') ? 'selected' : ''; ?>>NA
+                                    </option>
+                                    <option value="blurred_vision" <?= ($is_edit && $report->symptoms == 'blurred_vision') ? 'selected' : set_select('symptoms', 'blurred_vision'); ?>>
                                         Blurred Vision</option>
-                                    <option value="watering" <?= set_select('symptoms', 'watering'); ?>>Watering</option>
-                                    <option value="redness" <?= set_select('symptoms', 'redness'); ?>>Redness</option>
+                                    <option value="watering" <?= ($is_edit && $report->symptoms == 'watering') ? 'selected' : set_select('symptoms', 'watering'); ?>>Watering</option>
+                                    <option value="redness" <?= ($is_edit && $report->symptoms == 'redness') ? 'selected' : set_select('symptoms', 'redness'); ?>>Redness</option>
                                 </select>
                             </div>
 
@@ -894,13 +924,12 @@
                             <div class="mb-3">
                                 <label class="form-label">Occular Findings</label>
                                 <select name="ocular_findings" class="form-control">
-                                    <option value="normal" <?= set_select('ocular_findings', 'normal'); ?>>Normal
+                                    <option value="normal" <?= ($is_edit && $report->ocular_findings == 'normal') ? 'selected' : set_select('ocular_findings', 'normal'); ?>>Normal
                                     </option>
-                                    <option value="conjunctivitis" <?= set_select('ocular_findings', 'conjunctivitis'); ?>>Conjunctivitis</option>
-                                    <option value="cataract" <?= set_select('ocular_findings', 'cataract'); ?>>Cataract
+                                    <option value="conjunctivitis" <?= ($is_edit && $report->ocular_findings == 'conjunctivitis') ? 'selected' : set_select('ocular_findings', 'conjunctivitis'); ?>>Conjunctivitis</option>
+                                    <option value="cataract" <?= ($is_edit && $report->ocular_findings == 'cataract') ? 'selected' : set_select('ocular_findings', 'cataract'); ?>>Cataract
                                     </option>
-                                    <option value="pterygium" <?= set_select('ocular_findings', 'pterygium'); ?>>
-                                        Pterygium</option>
+                                    <option value="pterygium" <?= ($is_edit && $report->ocular_findings == 'pterygium') ? 'selected' : set_select('ocular_findings', 'pterygium'); ?>>Pterygium</option>
                                 </select>
                             </div>
 
@@ -910,12 +939,12 @@
                                         class="text-danger">*</span></label>
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="external_eye_exam"
-                                        value="abnormal" <?= set_radio('external_eye_exam', 'abnormal'); ?> required>
+                                        value="abnormal" <?= ($is_edit && $report->external_eye_exam == 'abnormal') ? 'checked' : set_radio('external_eye_exam', 'abnormal'); ?> required>
                                     <label class="form-check-label">Abnormal</label>
                                 </div>
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="external_eye_exam" value="normal"
-                                        <?= set_radio('external_eye_exam', 'normal'); ?>>
+                                        <?= ($is_edit && $report->external_eye_exam == 'normal') ? 'checked' : set_radio('external_eye_exam', 'normal'); ?>>
                                     <label class="form-check-label">Normal</label>
                                 </div>
                                 <?= form_error('external_eye_exam'); ?>
@@ -925,8 +954,8 @@
                             <div class="mb-3">
                                 <label class="form-label">Refraction</label>
                                 <select name="refraction" class="form-control">
-                                    <option value="no" <?= set_select('refraction', 'no'); ?>>No</option>
-                                    <option value="yes" <?= set_select('refraction', 'yes'); ?>>Yes</option>
+                                    <option value="no" <?= ($is_edit && $report->refraction == 'no') ? 'selected' : set_select('refraction', 'no'); ?>>No</option>
+                                    <option value="yes" <?= ($is_edit && $report->refraction == 'yes') ? 'selected' : set_select('refraction', 'yes'); ?>>Yes</option>
                                 </select>
                             </div>
 
@@ -937,25 +966,25 @@
                                             class="text-danger">*</span></label>
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="va_re" value="6/6"
-                                            <?= set_radio('va_re', '6/6'); ?> required>
+                                            <?= ($is_edit && $report->va_re == '6/6') ? 'checked' : set_radio('va_re', '6/6'); ?> required>
                                         6/6<br>
                                         <input class="form-check-input" type="radio" name="va_re" value="6/9"
-                                            <?= set_radio('va_re', '6/9'); ?>>
+                                            <?= ($is_edit && $report->va_re == '6/9') ? 'checked' : set_radio('va_re', '6/9'); ?>>
                                         6/9<br>
                                         <input class="form-check-input" type="radio" name="va_re" value="6/12"
-                                            <?= set_radio('va_re', '6/12'); ?>>
+                                            <?= ($is_edit && $report->va_re == '6/12') ? 'checked' : set_radio('va_re', '6/12'); ?>>
                                         6/12<br>
                                         <input class="form-check-input" type="radio" name="va_re" value="6/18"
-                                            <?= set_radio('va_re', '6/18'); ?>>
+                                            <?= ($is_edit && $report->va_re == '6/18') ? 'checked' : set_radio('va_re', '6/18'); ?>>
                                         6/18<br>
                                         <input class="form-check-input" type="radio" name="va_re" value="6/24"
-                                            <?= set_radio('va_re', '6/24'); ?>>
+                                            <?= ($is_edit && $report->va_re == '6/24') ? 'checked' : set_radio('va_re', '6/24'); ?>>
                                         6/24<br>
                                         <input class="form-check-input" type="radio" name="va_re" value="6/36"
-                                            <?= set_radio('va_re', '6/36'); ?>>
+                                            <?= ($is_edit && $report->va_re == '6/36') ? 'checked' : set_radio('va_re', '6/36'); ?>>
                                         6/36<br>
                                         <input class="form-check-input" type="radio" name="va_re" value="6/60"
-                                            <?= set_radio('va_re', '6/60'); ?>> 6/60
+                                            <?= ($is_edit && $report->va_re == '6/60') ? 'checked' : set_radio('va_re', '6/60'); ?>> 6/60
                                     </div>
                                     <?= form_error('va_re'); ?>
                                 </div>
@@ -965,25 +994,25 @@
                                             class="text-danger">*</span></label>
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="va_le" value="6/6"
-                                            <?= set_radio('va_le', '6/6'); ?> required>
+                                            <?= ($is_edit && $report->va_le == '6/6') ? 'checked' : set_radio('va_le', '6/6'); ?> required>
                                         6/6<br>
                                         <input class="form-check-input" type="radio" name="va_le" value="6/9"
-                                            <?= set_radio('va_le', '6/9'); ?>>
+                                            <?= ($is_edit && $report->va_le == '6/9') ? 'checked' : set_radio('va_le', '6/9'); ?>>
                                         6/9<br>
                                         <input class="form-check-input" type="radio" name="va_le" value="6/12"
-                                            <?= set_radio('va_le', '6/12'); ?>>
+                                            <?= ($is_edit && $report->va_le == '6/12') ? 'checked' : set_radio('va_le', '6/12'); ?>>
                                         6/12<br>
                                         <input class="form-check-input" type="radio" name="va_le" value="6/18"
-                                            <?= set_radio('va_le', '6/18'); ?>>
+                                            <?= ($is_edit && $report->va_le == '6/18') ? 'checked' : set_radio('va_le', '6/18'); ?>>
                                         6/18<br>
                                         <input class="form-check-input" type="radio" name="va_le" value="6/24"
-                                            <?= set_radio('va_le', '6/24'); ?>>
+                                            <?= ($is_edit && $report->va_le == '6/24') ? 'checked' : set_radio('va_le', '6/24'); ?>>
                                         6/24<br>
                                         <input class="form-check-input" type="radio" name="va_le" value="6/36"
-                                            <?= set_radio('va_le', '6/36'); ?>>
+                                            <?= ($is_edit && $report->va_le == '6/36') ? 'checked' : set_radio('va_le', '6/36'); ?>>
                                         6/36<br>
                                         <input class="form-check-input" type="radio" name="va_le" value="6/60"
-                                            <?= set_radio('va_le', '6/60'); ?>> 6/60
+                                            <?= ($is_edit && $report->va_le == '6/60') ? 'checked' : set_radio('va_le', '6/60'); ?>> 6/60
                                     </div>
                                     <?= form_error('va_le'); ?>
                                 </div>
@@ -1009,68 +1038,74 @@
                     <div class="row">
                         <div class="col-md-3">
                             <label>Hemoglobin <span class="text-danger">*</span></label>
-                            <input name="hemoglobin" id="hemoglobin" value="<?= set_value('hemoglobin'); ?>"
+                            <input name="hemoglobin" id="hemoglobin"
+                                value="<?= $is_edit ? $report->hemoglobin : set_value('hemoglobin'); ?>"
                                 class="form-control" placeholder="g/dL" required>
                             <?= form_error('hemoglobin'); ?>
                         </div>
                         <div class="col-md-3">
                             <label>Blood Sugar (Random) <span class="text-danger">*</span></label>
-                            <input name="blood_sugar" id="blood_sugar" value="<?= set_value('blood_sugar'); ?>"
+                            <input name="blood_sugar" id="blood_sugar"
+                                value="<?= $is_edit ? $report->blood_sugar : set_value('blood_sugar'); ?>"
                                 class="form-control" placeholder="mg/dL" required>
                             <?= form_error('blood_sugar'); ?>
                         </div>
                         <div class="col-md-3">
                             <label>HbA1c <span class="text-danger">*</span></label>
-                            <input name="hba1c" id="hba1c" value="<?= set_value('hba1c'); ?>" class="form-control"
+                            <input name="hba1c" id="hba1c"
+                                value="<?= $is_edit ? $report->hba1c : set_value('hba1c'); ?>" class="form-control"
                                 placeholder="%" required>
                             <?= form_error('hba1c'); ?>
                         </div>
                         <div class="col-md-3">
                             <label>Urine Routine <span class="text-danger">*</span></label>
                             <select name="urine_routine" class="form-control" required>
-                                <option value="normal" <?= set_select('urine_routine', 'normal'); ?>>Normal</option>
-                                <option value="abnormal" <?= set_select('urine_routine', 'abnormal'); ?>>Abnormal
+                                <option value="normal" <?= ($is_edit && $report->urine_routine == 'normal') ? 'selected' : set_select('urine_routine', 'normal'); ?>>Normal</option>
+                                <option value="abnormal" <?= ($is_edit && $report->urine_routine == 'abnormal') ? 'selected' : set_select('urine_routine', 'abnormal'); ?>>Abnormal
                                 </option>
                             </select>
-
+                            <?= form_error('urine_routine'); ?>
                         </div>
-                        <?= form_error('urine_routine'); ?>
+
                     </div>
 
                     <div class="section-title">Haematology Investigation</div>
                     <p class="text-muted small">Lab values as per collected samples.</p>
-                    <div class="row">
-                        <div class="row mt-3">
-                            <div class="col-md-3">
-                                <label>WBC Count </label>
-                                <input name="wbc_count" id="wbc_count" value="<?= set_value('wbc_count'); ?>"
-                                    class="form-control">
-                            </div>
-                            <div class="col-md-3">
-                                <label>Platelet Count</label>
-                                <input name="platelet_count" id="platelet_count"
-                                    value="<?= set_value('platelet_count'); ?>" class="form-control">
-                            </div>
-                            <div class="col-md-3">
-                                <label>ECG</label>
-                                <select name="ecg" class="form-control">
-                                    <option value="not_done" <?= set_select('ecg', 'not_done'); ?>>Not Done</option>
-                                    <option value="normal" <?= set_select('ecg', 'normal'); ?>>Normal</option>
-                                    <option value="abnormal" <?= set_select('ecg', 'abnormal'); ?>>Abnormal</option>
-                                </select>
-                            </div>
-                            <div class="col-md-3">
-                                <label>Chest X-Ray</label>
-                                <select name="chest_x_ray" class="form-control">
-                                    <option value="not_required" <?= set_select('chest_x_ray', 'not_required'); ?>>Not
-                                        Required</option>
-                                    <option value="normal" <?= set_select('chest_x_ray', 'normal'); ?>>Normal</option>
-                                    <option value="abnormal" <?= set_select('chest_x_ray', 'abnormal'); ?>>Abnormal
-                                    </option>
-                                </select>
-                            </div>
+                    <div class="row mt-3">
+                        <div class="col-md-3">
+                            <label>WBC Count </label>
+                            <input name="wbc_count" id="wbc_count"
+                                value="<?= $is_edit ? $report->wbc_count : set_value('wbc_count'); ?>"
+                                class="form-control">
+                        </div>
+                        <div class="col-md-3">
+                            <label>Platelet Count</label>
+                            <input name="platelet_count" id="platelet_count"
+                                value="<?= $is_edit ? $report->platelet_count : set_value('platelet_count'); ?>"
+                                class="form-control">
+                        </div>
+                        <div class="col-md-3">
+                            <label>ECG</label>
+                            <select name="ecg" class="form-control">
+                                <option value="not_done" <?= ($is_edit && $report->ecg == 'not_done') ? 'selected' : set_select('ecg', 'not_done'); ?>>Not Done</option>
+
+                                <option value="normal" <?= ($is_edit && $report->ecg == 'normal') ? 'selected' : set_select('ecg', 'normal'); ?>>Normal</option>
+
+                                <option value="abnormal" <?= ($is_edit && $report->ecg == 'abnormal') ? 'selected' : set_select('ecg', 'abnormal'); ?>>Abnormal</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label>Chest X-Ray</label>
+                            <select name="chest_x_ray" class="form-control">
+                                <option value="not_required" <?= ($is_edit && $report->chest_x_ray == 'not_required') ? 'selected' : set_select('chest_x_ray', 'not_required'); ?>>Not Required</option>
+
+                                <option value="normal" <?= ($is_edit && $report->chest_x_ray == 'normal') ? 'selected' : set_select('chest_x_ray', 'normal'); ?>>Normal</option>
+
+                                <option value="abnormal" <?= ($is_edit && $report->chest_x_ray == 'abnormal') ? 'selected' : set_select('chest_x_ray', 'abnormal'); ?>>Abnormal</option>
+                            </select>
                         </div>
                     </div>
+
                     <div class="d-flex flex-column flex-md-row justify-content-between gap-2 mt-3">
                         <button type="button" class="btn btn-outline-secondary prev-tab"
                             data-prev="#special">Back</button>
@@ -1162,18 +1197,27 @@
         // =========================
         // PATIENT TYPE TOGGLE
         // =========================
-        let patientType = "<?= set_value('patient_type'); ?>";
+        let patientType = "<?= $is_edit ? $report->patient_type : set_value('patient_type'); ?>";
 
         if (patientType === 'existing') {
             $('#existing_patient_box').show();
         }
+
+        <?php if ($is_edit): ?>
+            $('#existing_patient_box').show();
+            $('input[name="patient_type"][value="existing"]').prop('checked', true);
+
+            $('#existing_patient').val("<?= $report->patient_id ?>").trigger('change');
+        <?php endif; ?>
+
         $('input[name="patient_type"]').change(function () {
             let type = $(this).val();
-            //  console.log("Selected:", type);
+
             if (type === 'existing') {
                 $('#existing_patient_box').show();
             } else {
                 $('#existing_patient_box').hide();
+                $('#existing_patient').val('').trigger('change');
                 $('#patient_section')
                     .find('input, select')
                     .prop('disabled', false);

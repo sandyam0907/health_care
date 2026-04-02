@@ -54,7 +54,7 @@ class Dashboard extends My_Controller
 		$data['age_data'] = $this->dashboard_model->get_age_group_data($filters);
 		$data['district_wise'] = $this->dashboard_model->get_district_wise_screenings($filters);
 
-		//Filter Dropdown
+		// Filter Dropdown
 		$data['districts'] = $this->location->get_districts_dropdown();
 		$data['camp_types'] = $this->report_model->get_camp_types();
 

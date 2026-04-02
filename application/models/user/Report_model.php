@@ -154,6 +154,15 @@ class Report_model extends CI_Model
     {
         $this->db->select('
         patient_reports.report_id,
+        patient_reports.patient_id,
+        patient_reports.project_id,
+        patient_reports.general_check_id,
+        patient_reports.gp_check_id,
+        patient_reports.specialty_check_id,
+        patient_reports.lab_reports_id,
+
+        screenings.id as screening_id,   
+
         project_master.project_name,
         projects.camp_date,
         projects.location,
@@ -163,12 +172,7 @@ class Report_model extends CI_Model
         ci_states.name,
         ci_taluks.taluk_name,
 
-        patients.first_name,
-        patients.last_name,
-        patients.age,
-        patients.gender,
-        patients.mobile,
-
+        patients.*,
         general_check.*,
         gp_check.*,
         specialty_check.*,
@@ -181,6 +185,8 @@ class Report_model extends CI_Model
         $this->db->join('patients', 'patients.id = patient_reports.patient_id', 'left');
         $this->db->join('project_master', 'project_master.id = projects.project_master_id', 'left');
 
+       
+
         $this->db->join('ci_districts', 'ci_districts.id = projects.district_id');
         $this->db->join('ci_states', 'ci_states.id = projects.state_id');
         $this->db->join('ci_taluks', 'ci_taluks.id = projects.taluk_id');
@@ -189,7 +195,11 @@ class Report_model extends CI_Model
         $this->db->join('gp_check', 'gp_check.id = patient_reports.gp_check_id', 'left');
         $this->db->join('specialty_check', 'specialty_check.id = patient_reports.specialty_check_id', 'left');
         $this->db->join('lab_reports', 'lab_reports.id = patient_reports.lab_reports_id', 'left');
-
+ $this->db->join(
+            'screenings',
+            'screenings.id = general_check.screening_id',
+            'left'
+        );
         $this->db->where('patient_reports.report_id', $report_id);
 
         $query = $this->db->get();
