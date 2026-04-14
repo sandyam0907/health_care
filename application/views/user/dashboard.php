@@ -144,7 +144,7 @@
                 <button class="btn btn-primary btn-sm">Apply</button>
             </div> -->
 
-             <div class="col-md-3 col-sm-12 mb-2">
+            <div class="col-md-3 col-sm-12 mb-2">
                 <div class="d-flex flex-column flex-md-row align-items-center">
                     <button class="btn btn-outline-secondary btn-sm mr-md-2 mb-2 mb-md-0 reset-btn">
                         <i class="fa fa-refresh"></i> Reset
@@ -225,8 +225,10 @@
     <!-- ===== CHARTS ===== -->
 
     <!-- ROW 1 -->
+    <!-- ROW 1 -->
     <div class="row chart-row">
 
+        <!-- Gender Distribution -->
         <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
             <div class="card chart-card h-100">
                 <div class="card-header">Gender Distribution</div>
@@ -236,6 +238,7 @@
             </div>
         </div>
 
+        <!-- Age Group -->
         <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
             <div class="card chart-card h-100">
                 <div class="card-header">Age Group</div>
@@ -245,21 +248,21 @@
             </div>
         </div>
 
+        <!-- District Performance -->
         <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
             <div class="card chart-card h-100">
-
-                <!-- HEADER -->
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <span>District Performance</span>
-                    <select id="districtPerformanceFilter" class="form-control form-control-sm" style="width:150px;">
-                        <option value="">Select</option>
-                        <?php foreach ($districts as $d): ?>
-                            <option value="<?= $d->id ?>"><?= $d->district_name ?></option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
+    <span>District Performance</span>
+    <select id="districtPerformanceFilter"
+            class="form-control form-control-sm"
+            style="width:150px;">
+        <option value="">Select</option>
+        <?php foreach ($districts as $d): ?>
+            <option value="<?= $d->id ?>"><?= $d->district_name ?></option>
+        <?php endforeach; ?>
+    </select>
+</div>
 
-                <!-- BODY -->
                 <div class="card-body p-3 custom-scroll" style="max-height:350px;" id="districtPerformanceContainer">
                     <?php
                     if (!empty($_GET['district'])) {
@@ -286,11 +289,7 @@
             </div>
         </div>
 
-    </div>
-
-    <!-- ROW 2 -->
-    <div class="row chart-row">
-
+        <!-- Report Status -->
         <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
             <div class="card chart-card h-100">
                 <div class="card-header">Report Status</div>
@@ -300,7 +299,8 @@
             </div>
         </div>
 
-        <div class="col-lg-8 col-md-6 col-sm-12 mb-3">
+        <!-- Top Districts -->
+        <div class="col-lg-8 col-md-12 col-sm-12 mb-3">
             <div class="card chart-card h-100">
                 <div class="card-header">Top Districts</div>
                 <div class="card-body">

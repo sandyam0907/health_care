@@ -37,7 +37,8 @@
     $('.prev-tab').click(() => goToTab('prev'));
 </script>
 
-<script>
+<!-- reports -->
+<!-- <script>
     $(document).ready(function () {
 
         var table = $('#reportsTable').DataTable({
@@ -99,7 +100,25 @@
 
                 });
 
+                $(document).on('click', '.qr-btn', function () {
+    let url = $(this).data('url');
+
+    // Clear previous QR code
+    $('#qrCode').html('');
+
+    // Generate new QR code
+    new QRCode(document.getElementById("qrCode"), {
+        text: url,
+        width: 260,
+        height: 260
+    });
+
+    // Show modal
+    $('#qrModal').modal('show');
+});
+
             }
+
 
         });
 
@@ -127,8 +146,79 @@
 
     });
 
+</script> -->
+
+<script>
+$(document).ready(function () {
+
+    var table = $('#reportsTable').DataTable({
+
+        processing: true,
+        serverSide: true,
+
+        ajax: {
+            url: "<?= base_url('user/reports/reports_datatable_json') ?>",
+            type: "POST",
+            data: function (d) {
+
+                d.from_date = $('#from_date').val();
+                d.to_date = $('#to_date').val();
+                d.district = $('#district').val();
+                d.status = $('#status').val();
+                d.camp_type = $('#camp_type').val();
+                d.keyword = $('#keyword').val();
+
+                d[csrfName] = csrfHash;
+            }
+        },
+
+        order: [[0, "desc"]],
+
+        columnDefs: [
+            { targets: -1, orderable: false } // Disable sorting on Action column
+        ]
+    });
+
+    // ✅ QR Code Button Click Event
+    $(document).on('click', '.qr-btn', function () {
+        let url = $(this).data('url');
+
+         console.log("QR Code URL:", url);
+
+        // Clear previous QR code
+        $('#qrCode').html('');
+
+        // Generate new QR code
+        new QRCode(document.getElementById("qrCode"), {
+            text: url,
+            width: 260,
+            height: 260
+        });
+
+        // Show modal
+        $('#qrModal').modal('show');
+    });
+
+    // ✅ Apply Filter
+    $('.btn-primary').click(function () {
+        table.ajax.reload();
+    });
+
+    // ✅ Reset Filter
+    $('.btn-outline-secondary').click(function () {
+        $('#from_date').val('');
+        $('#to_date').val('');
+        $('#district').val('');
+        $('#status').val('');
+        $('#camp_type').val('');
+        $('#keyword').val('');
+        table.ajax.reload();
+    });
+
+});
 </script>
 
+<!-- dashboard -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     $(function () {

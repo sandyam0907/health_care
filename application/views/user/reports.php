@@ -29,31 +29,33 @@
         min-width: auto !important;
     }
 
-    /* icon colors before hover */
-    .view-btn i {
-        color: #007bff;
-    }
+/* Match icon color with outline button color */
+.btn-outline-primary i { color: #007bff; }
+.btn-outline-danger i { color: #dc3545; }
+.btn-outline-success i { color: #28a745; }
+.btn-outline-info i { color: #17a2b8; }
+.btn-outline-warning i { color: #ffc107; }
 
-    .pdf-btn i {
-        color: #dc3545;
-    }
+/* Change icon color to white on hover */
+.btn-outline-primary:hover i,
+.btn-outline-danger:hover i,
+.btn-outline-success:hover i,
+.btn-outline-info:hover i,
+.btn-outline-warning:hover i {
+    color: #fff;
+}
 
-    .edit-btn i {
-        color: #ffc107;
-    }
-
-    /* icon on hover */
-    .view-btn:hover i,
-    .pdf-btn:hover i,
-    .edit-btn:hover i {
-        color: #fff;
-    }
+/* Smooth hover effect */
+.flex .btn {
+    transition: all 0.2s ease-in-out;
+}
+   
 
     .btn {
         white-space: nowrap;
     }
 
-    .reset-btn {
+    .reset-btn ,i {
         white-space: nowrap;
     }
 
@@ -117,6 +119,12 @@
     .dataTables_wrapper .dataTables_filter {
         margin-bottom: 10px;
     }
+    #qrCode img {
+    width: 260px !important;
+    height: 260px !important;
+    margin: auto;
+    display: block;
+}
 </style>
 <!-- ===== BREADCRUMB BAR ===== -->
 <div class="container-fluid">
@@ -245,8 +253,7 @@
                             <th>District</th>
                             <th>Camp Date</th>
                             <th>Status</th>
-                            <th width="160">Action</th>
-                            <th>QR</th>
+                            <th width="220">Action</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -257,6 +264,27 @@
     </div>
 </div>
 
+<!-- QR Code Modal -->
+<div class="modal fade" id="qrModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-center">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">
+                    <i class="fa fa-qrcode"></i> Scan QR Code
+                </h5>
+                <button type="button" class="close text-white" data-dismiss="modal">
+                    &times;
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="qrCode"></div>
+                <p class="mt-2 text-muted small">
+                    Scan to download the report
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
 <script>
     var csrfName = '<?= $this->security->get_csrf_token_name(); ?>';
     var csrfHash = '<?= $this->security->get_csrf_hash(); ?>';
